@@ -13,6 +13,7 @@ public enum SuccessStatus {
 
     /** 201 CREATED */
     CREATE_SAMPLE_SUCCESS(HttpStatus.CREATED, "샘플 등록 성공"),
+    CREATE_ACCESS_TOKEN_SUCCESS(HttpStatus.CREATED, "토큰 발급 성공"),
 
     ;
 
