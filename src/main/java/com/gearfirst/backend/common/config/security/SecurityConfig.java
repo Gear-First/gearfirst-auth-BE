@@ -23,6 +23,7 @@ import java.util.Collections;
 @EnableWebSecurity
 public class SecurityConfig {
 
+
     /**
      * Authorization Server용 SecurityFilterChain
      * (OAuth2.0 endpoints: /oauth2/authorize(클라이언트가 인가 코드 요청), /oauth2/token(accessToken 교환), /oauth2/jwks(공개키제공) 등)
@@ -30,6 +31,7 @@ public class SecurityConfig {
     @Bean
     @Order(1) // OAuth2 관련 엔드포인트 우선 처리
     public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http) throws Exception {
+        //인가 코드 발급
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
         http
@@ -39,7 +41,9 @@ public class SecurityConfig {
                 )
                 // JWT 포맷의 Access Token 발급을 위해 Resource Server 기능 포함
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                //로그인 성공시 세션에 저장됨 저장된 인증 정보는 defaultSecurityFilterChain에서 관리하고 /oauth2/authorize 요청이 오면 SecurityFilterChain이 받는다.
+                //TODO: stateless로 유지하려면 SecurityFilterChain이 같은 AuthenticationManager를 공유하도록 설정
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
 
         return http.build();
     }
@@ -63,8 +67,20 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")               // 커스텀 로그인 페이지
                         .loginProcessingUrl("/login")      // 로그인 POST 엔드포인트
-                        //.defaultSuccessUrl("/", true)
-                        //.failureUrl("/login?error=true")
+                        //.defaultSuccessUrl("/login-success", true)
+                        .successHandler((request, response, authentication) -> {
+                            // 로그인 성공 후 인가 코드 요청으로 리다이렉트
+                            String authorizeUrl =
+                                    "http://localhost:8084/oauth2/authorize?" +
+                                            "client_id=gearfirst-client" +
+                                            "&redirect_uri=http://localhost:8084/auth/callback" +
+                                            "&response_type=code" +
+                                            "&scope=profile%20email" +
+                                            "&state=random123";
+                            response.sendRedirect(authorizeUrl);
+                        })
+                        .failureUrl("/login?error=true")
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout

@@ -31,7 +31,7 @@ public class AuthorizationServerConfig {
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 //인가 코드 발급 후 돌아올 주소
                 //TODO: .redirectUri("https://app.gearfirst.com/login/callback") // 인가 코드 받은 뒤 리디렉션 URI
-                .redirectUri("http://localhost:8084/login-success")
+                .redirectUri("http://localhost:8084/auth/callback")
                 //클라이언트가 요청 가능한 접근 범위
                 .scope("profile")
                 .scope("email")
