@@ -31,9 +31,9 @@ public class SecurityConfig {
      */
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authBilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         //여기서 UserDetailService와 PasswordEncoder를 명시적으로 설정할 수도 있음
-        return authBilder.build();
+        return authBuilder.build();
     }
 
 
@@ -44,28 +44,25 @@ public class SecurityConfig {
     @Bean
     @Order(1) // OAuth2 관련 엔드포인트 우선 처리
     public SecurityFilterChain authServerSecurityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-        //인가 코드 발급
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                new OAuth2AuthorizationServerConfigurer();
-        // TODO: OIDC는 현재 필요 없으므로 활성화 X (원하면 추가 가능)
-        // authorizationServerConfigurer.oidc(Customizer.withDefaults());
 
+        // Authorization Server 전용 Configurer 생성
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
+                OAuth2AuthorizationServerConfigurer.authorizationServer();
+
+        // authorize/token/jwks 엔드포인트 자동 등록
         http
                 .securityMatcher("/oauth2/**", "/.well-known/**", "/jwks/**")
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .authenticationManager(authenticationManager)
                 .with(authorizationServerConfigurer, Customizer.withDefaults())
-                .exceptionHandling(exceptions ->
-                        exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
+                .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                 )
-
-                // JWT 포맷의 Access Token 발급을 위해 Resource Server 기능 포함
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                //로그인 성공시 세션에 저장됨 저장된 인증 정보는 defaultSecurityFilterChain에서 관리하고 /oauth2/authorize 요청이 오면 SecurityFilterChain이 받는다.
-                //TODO: stateless로 유지하려면 SecurityFilterChain이 같은 AuthenticationManager를 공유하도록 설정
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
         return http.build();
+
+
+
     }
 
     /**
@@ -84,18 +81,20 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")               // 커스텀 로그인 페이지
                         .loginProcessingUrl("/login")      // 로그인 POST 엔드포인트
-                        //.defaultSuccessUrl("/login-success", true)
-
+                        .defaultSuccessUrl("/oauth2/authorize", true)
+                        .usernameParameter("email")
+                        .passwordParameter("password")
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
+
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
                 )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/oauth2/token") // token endpoint는 stateless
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//                .csrf(csrf -> csrf
+//                        .ignoringRequestMatchers("/oauth2/token") // token endpoint는 stateless
+//                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
         return http.build();
     }
 
