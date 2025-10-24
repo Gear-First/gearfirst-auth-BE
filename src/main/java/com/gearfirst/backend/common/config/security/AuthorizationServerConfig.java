@@ -29,7 +29,7 @@ public class AuthorizationServerConfig {
                 //OAuth2 인증 방식
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                //인가 코드 발급 후 돌아올 주소
+                //인가 코드 발급 후 돌아올 주소 (프론트 주소)
                 //TODO: .redirectUri("https://app.gearfirst.com/login/callback") // 인가 코드 받은 뒤 리디렉션 URI
                 .redirectUri("http://localhost:8084/auth/callback")
                 //클라이언트가 요청 가능한 접근 범위
