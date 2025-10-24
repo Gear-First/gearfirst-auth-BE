@@ -1,8 +1,7 @@
 package com.gearfirst.backend.api.auth.controller;
 
 
-import com.gearfirst.backend.api.auth.service.AuthService;
-import com.gearfirst.backend.api.auth.service.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
