@@ -15,8 +15,9 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 import java.util.Arrays;
@@ -51,16 +52,16 @@ public class SecurityConfig {
 
         // authorize/token/jwks 엔드포인트 자동 등록
         http
-                .securityMatcher("/oauth2/**", "/.well-known/**", "/jwks/**")
+                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, Customizer.withDefaults())
                 .exceptionHandling(ex ->
                         ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
-
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/oauth2/token")); // token 요청은 제외
         return http.build();
-
 
 
     }
@@ -81,7 +82,6 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")               // 커스텀 로그인 페이지
                         .loginProcessingUrl("/login")      // 로그인 POST 엔드포인트
-                        .defaultSuccessUrl("/oauth2/authorize", true)
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .failureUrl("/login?error=true")
@@ -95,12 +95,27 @@ public class SecurityConfig {
 //                        .ignoringRequestMatchers("/oauth2/token") // token endpoint는 stateless
 //                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+                //.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        var config = new org.springframework.web.cors.CorsConfiguration();
+        config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
+        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setExposedHeaders(Collections.singletonList("*"));
+        config.setAllowCredentials(true);
+
+        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 }
