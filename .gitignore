@@ -42,3 +42,5 @@ out/
 # GitHub Actions workflows는 무시하지 않음
 !.github/
 !.github/workflows/
+
+git rm --cached .env
