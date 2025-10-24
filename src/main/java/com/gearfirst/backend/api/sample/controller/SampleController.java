@@ -47,7 +47,7 @@ public class SampleController {
     public ResponseEntity<ApiResponse<Void>> exception(@PathVariable("isError") String isError) {
         if (isError.equals("true")) {
             // 커스텀 예외처리 (BadRequestException) 사용방법 및 ErrorStatus 사용방법
-            throw new BadRequestException(ErrorStatus.NOT_FOUND_MEMBER_EXCEPTION.getMessage());
+            throw new BadRequestException(ErrorStatus.NOT_FOUND_USER_EXCEPTION.getMessage());
         }
 
         return ApiResponse.success_only(SuccessStatus.SEND_SAMPLE_SUCCESS);
