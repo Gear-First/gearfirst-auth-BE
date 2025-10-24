@@ -81,7 +81,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")               // 커스텀 로그인 페이지
                         .loginProcessingUrl("/login")      // 로그인 POST 엔드포인트
-                        .defaultSuccessUrl("/oauth2/authorize", true)
+                        // defaultSuccessUrl 제거 - SavedRequest로 원래 요청 복원
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .failureUrl("/login?error=true")
