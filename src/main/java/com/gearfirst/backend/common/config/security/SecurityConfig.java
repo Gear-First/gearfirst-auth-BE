@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,21 +40,26 @@ import java.util.Collections;
 @EnableWebSecurity
 public class SecurityConfig {
     private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
-    private RequestCache requestCache;
-    @Bean
-    public RequestCache requestCacheBean() { // 공용 Bean으로 등록
-        return new CustomRequestCache();
-    }
+
+//    @Bean
+//    public RequestCache requestCacheBean() { // 공용 Bean으로 등록
+//        return new CustomRequestCache();
+//    }
     /**
      * AuthenticationManager Bean 등록
      * 두 FilterChain이 동일한 AuthenticationManager를 공유히도록 함
      */
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        //여기서 UserDetailService와 PasswordEncoder를 명시적으로 설정할 수도 있음
-        return authBuilder.build();
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+//        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+//        //여기서 UserDetailService와 PasswordEncoder를 명시적으로 설정할 수도 있음
+//        return c
+//    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+//        return configuration.getAuthenticationManager(); //  안전하게 AuthenticationManager 반환
+//    }
+
 
 
     /**
@@ -67,7 +73,6 @@ public class SecurityConfig {
         // Authorization Server 전용 Configurer 생성
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
-        log.info(" [AuthServerChain] Authorization Server SecurityFilterChain 초기화됨");
 
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 // authorize/token/jwks 엔드포인트 자동 등록
@@ -82,19 +87,19 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 //.requestCache(requestCache -> requestCache.disable())
-                .requestCache(c -> c.requestCache(requestCacheBean()))
+                //.requestCache(c -> c.requestCache(requestCacheBean()))
                 //.exceptionHandling(ex -> ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")) )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 //.csrf(csrf -> csrf.ignoringRequestMatchers("/oauth2/token")); // token 요청은 제외
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .formLogin(form -> form.loginPage("/login").permitAll())
+                //.formLogin(form -> form.loginPage("/login").permitAll())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
 
-        http
-                .addFilterAfter(new OAuth2DebugFilter(), SecurityContextHolderFilter.class);
-        log.debug(" [AuthServerChain] AuthorizationServerConfigurer 활성화 완료");
+//        http
+//                .addFilterAfter(new OAuth2DebugFilter(), SecurityContextHolderFilter.class);
+        //log.debug(" [AuthServerChain] AuthorizationServerConfigurer 활성화 완료");
         return http.build();
 
 
@@ -107,14 +112,7 @@ public class SecurityConfig {
     @Order(2) // 일반 요청은 두 번째 체인으로 처리
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
-        log.info(" [DefaultChain] Form Login SecurityFilterChain 초기화됨");
         http
-                .addFilterAfter((request, response, chain) -> {
-                    var auth = SecurityContextHolder.getContext().getAuthentication();
-                    System.out.println(" [Auth Filter] Principal: " +
-                            (auth != null ? auth.getName() : "null"));
-                    chain.doFilter(request, response);
-                }, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(basicConfigurer -> basicConfigurer.disable() )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -130,13 +128,10 @@ public class SecurityConfig {
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
-
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
-                )
-                // 커스터마이징된 RequestCache 등록
-                .requestCache(c -> c.requestCache(requestCacheBean()));
-        log.debug("🔍 [DefaultChain] Form Login 설정 완료");
+                );
+
         return http.build();
     }
 

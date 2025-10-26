@@ -20,7 +20,7 @@ import java.util.UUID;
 @Configuration
 @RequiredArgsConstructor
 public class AuthorizationServerConfig {
-    private final PasswordEncoder passwordEncoder;
+    //private final PasswordEncoder passwordEncoder;
     /**
      * 클라이언트 등록
      * 인가코드, 리프래시토큰, PKCE 지원 설정
@@ -40,7 +40,6 @@ public class AuthorizationServerConfig {
                 //인가 코드 발급 후 돌아올 주소 (프론트 주소)
                 //TODO: .redirectUri("https://app.gearfirst.com/login/callback") // 인가 코드 받은 뒤 리디렉션 URI
                 .redirectUri("http://localhost:5173/auth/callback")
-                //.redirectUri("http://localhost:8084/auth/callback") // 테스트용 리디렉션 URI
 
                 //클라이언트가 요청 가능한 접근 범위
                 .scope("user")
@@ -58,7 +57,7 @@ public class AuthorizationServerConfig {
                         .requireProofKey(false) // PKCE 필수(true) TODO: 프론트 엔드가 붙으면 활성화 예정
                         .build())
                 .build();
-        //메모리 기반 저장소
+        //메모리 기반 저장소 TODO: 운영 시 DB 기반 Repository로 변경 필요
         return new InMemoryRegisteredClientRepository(gearFirstClient);
     }
 
@@ -72,16 +71,7 @@ public class AuthorizationServerConfig {
                 .issuer("http://localhost:8084") // JWT iss 값으로 사용됨
                 .build();
     }
-//    @Bean
-//    public AuthorizationServerSettings authorizationServerSettings(
-//            @Value("${spring.security.oauth2.authorizationserver.issuer}") String issuer) {
-//        return AuthorizationServerSettings.builder()
-//                .issuer(issuer)
-//                .authorizationEndpoint("/oauth2/authorize")
-//                .tokenEndpoint("/oauth2/token")
-//                .jwkSetEndpoint("/.well-known/jwks.json")
-//                .build();
-//    }
+
 
 
 }

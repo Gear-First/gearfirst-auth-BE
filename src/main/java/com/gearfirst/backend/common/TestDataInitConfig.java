@@ -2,7 +2,6 @@ package com.gearfirst.backend.common;
 
 import com.gearfirst.backend.api.auth.entity.Auth;
 import com.gearfirst.backend.api.auth.entity.AuthStatus;
-import com.gearfirst.backend.api.auth.entity.RoleStatus;
 import com.gearfirst.backend.api.auth.respository.AuthRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ public class TestDataInitConfig {
                 .email("test@gearfirst.com")
                 .password(passwordEncoder.encode("1234"))
                 .status(AuthStatus.ACTIVE)
-                .role(RoleStatus.ENGINEER)
                 .isFirstLogin(true)
                 .build();
 
