@@ -31,6 +31,7 @@ jobs:
             for (const line of issueLines) {
               const lower = line.toLowerCase();
               if (closingKeywords.some(k => lower.includes(k))) {
+                const issuePattern = /#(\d+)/g;
                 let match;
                 while ((match = issuePattern.exec(line)) !== null) {
                   const issue_number = parseInt(match[1]);
