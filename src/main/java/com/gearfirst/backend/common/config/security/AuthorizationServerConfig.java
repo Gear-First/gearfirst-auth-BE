@@ -1,6 +1,7 @@
 package com.gearfirst.backend.common.config.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,8 +43,9 @@ public class AuthorizationServerConfig {
                 //.redirectUri("http://localhost:8084/auth/callback") // 테스트용 리디렉션 URI
 
                 //클라이언트가 요청 가능한 접근 범위
-                .scope("profile")
-                .scope("email")
+                .scope("user")
+                .scope("inventory")
+                .scope("order")
                 //토큰 관련 정책
                 .tokenSettings(TokenSettings.builder()
                         .accessTokenTimeToLive(Duration.ofMinutes(30))
@@ -70,5 +72,16 @@ public class AuthorizationServerConfig {
                 .issuer("http://localhost:8084") // JWT iss 값으로 사용됨
                 .build();
     }
+//    @Bean
+//    public AuthorizationServerSettings authorizationServerSettings(
+//            @Value("${spring.security.oauth2.authorizationserver.issuer}") String issuer) {
+//        return AuthorizationServerSettings.builder()
+//                .issuer(issuer)
+//                .authorizationEndpoint("/oauth2/authorize")
+//                .tokenEndpoint("/oauth2/token")
+//                .jwkSetEndpoint("/.well-known/jwks.json")
+//                .build();
+//    }
+
 
 }
