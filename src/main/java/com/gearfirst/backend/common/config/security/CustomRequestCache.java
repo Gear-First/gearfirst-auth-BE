@@ -18,8 +18,8 @@ public class CustomRequestCache extends HttpSessionRequestCache {
         System.out.println(" [CustomRequestCache] 요청 저장 시도: " + uri);
 
         //  /error는 저장하지 않음
-        if (uri.startsWith("/error")) {
-            System.out.println(" [CustomRequestCache] /error 요청은 저장하지 않음");
+        if (uri.startsWith("/error") ||  uri.startsWith("/.well-known/")) {
+            System.out.println(" [CustomRequestCache] /error 또는 /.well-known/ 요청은 저장하지 않음");
             return;
         }
 

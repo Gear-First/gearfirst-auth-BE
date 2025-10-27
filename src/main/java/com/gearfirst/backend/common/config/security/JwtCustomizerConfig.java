@@ -1,6 +1,5 @@
 package com.gearfirst.backend.common.config.security;
 
-import com.gearfirst.backend.api.auth.entity.Auth;
 import com.gearfirst.backend.api.auth.respository.AuthRepository;
 import com.gearfirst.backend.api.infra.client.UserClient;
 import com.gearfirst.backend.api.infra.dto.UserLoginRequest;
@@ -9,11 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
-
-import java.util.Collection;
 
 @Configuration
 @RequiredArgsConstructor
