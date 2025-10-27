@@ -1,5 +1,6 @@
 package com.gearfirst.backend.common.config.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -98,7 +99,7 @@ public class SecurityConfig {
                 .httpBasic(basicConfigurer -> basicConfigurer.disable() )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers( "/login", "/css/**", "/js/**", "/images/**", "/.well-known/**",  "/error" ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -111,10 +112,14 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
-                        .invalidateHttpSession(true)       // 세션 무효화
-                        .deleteCookies("JSESSIONID")       // 쿠키 직접 삭제 명시
+                        .logoutUrl("/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .clearAuthentication(true)
+
+
                 );
+
 
         return http.build();
     }

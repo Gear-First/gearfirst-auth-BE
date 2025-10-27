@@ -1,11 +1,11 @@
 package com.gearfirst.backend.api.auth.controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
+@RequestMapping("/api/v1/auth-test")
 public class TestController {
     @GetMapping("/login-success")
     @ResponseBody
@@ -22,5 +22,11 @@ public class TestController {
         System.out.println(" Code: " + code);
         System.out.println("============================================");
         return "인가 코드 : " + code;
+    }
+    @GetMapping("/me")
+    public String whoAmI(Authentication authentication) {
+        System.out.println("👤 현재 사용자: " + authentication.getName());
+        System.out.println("🔐 권한: " + authentication.getAuthorities());
+        return authentication.getAuthorities().toString();
     }
 }

@@ -32,21 +32,19 @@ public class JwtCustomizerConfig {
             if (context.getTokenType().getValue().equals("access_token")) {
 
                 Authentication principal = context.getPrincipal();
-                String username = principal.getName();
+                String email = principal.getName();
 
                 // User 서버에 사용자 정보 요청
                 UserResponse user = userClient.verifyUser(
-                        new UserLoginRequest(username, null) // JWT 발급 시 비밀번호는 이미 검증 완료
+                        new UserLoginRequest(email, null) // JWT 발급 시 비밀번호는 이미 검증 완료
                 );
 
                 //  클레임에 커스텀 값 추가
-                context.getClaims().claim("sub", username);
+                context.getClaims().claim("sub", email);
                 context.getClaims().claim("user_id", user.getUserId());
                 context.getClaims().claim("role",user.getRole());
                 context.getClaims().claim("organization_type", user.getOrganizationType());
                 context.getClaims().claim("organization_id", user.getOrganizationId());
-
-
             }
         };
     }

@@ -42,7 +42,7 @@ public class JwkConfig {
                     .keyID(UUID.randomUUID().toString())
                     .build();
         } catch (Exception ex) {
-            throw new IllegalStateException(ex);
+            throw new IllegalStateException("RSA 키 생성 실패", ex);
         }
     }
 }

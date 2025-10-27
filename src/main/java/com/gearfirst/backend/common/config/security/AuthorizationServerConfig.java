@@ -47,14 +47,14 @@ public class AuthorizationServerConfig {
                 .scope("order")
                 //토큰 관련 정책
                 .tokenSettings(TokenSettings.builder()
-                        .accessTokenTimeToLive(Duration.ofMinutes(30))
+                        .accessTokenTimeToLive(Duration.ofMinutes(3))
                         .refreshTokenTimeToLive(Duration.ofDays(1))
                         .reuseRefreshTokens(false)
                         .build())
                 //클라이언트 정책
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(false) // “이 앱이 정보에 접근하도록 허용하시겠습니까?” 창 비활성화
-                        .requireProofKey(false) // PKCE 필수(true) TODO: 프론트 엔드가 붙으면 활성화 예정
+                        .requireProofKey(true) // PKCE 필수(true) TODO: 프론트 엔드가 붙으면 활성화 예정
                         .build())
                 .build();
         //메모리 기반 저장소 TODO: 운영 시 DB 기반 Repository로 변경 필요
