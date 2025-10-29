@@ -50,7 +50,6 @@ public class SecurityConfig {
                 .requestCache(c -> c.requestCache(requestCacheBean()))
 
                 //.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                //.with(authorizationServerConfigurer, Customizer.withDefaults())
                 .securityMatcher(endpointsMatcher)
                 //.with(authorizationServerConfigurer, Customizer.withDefaults())
                 .with(authorizationServerConfigurer, (authorizationServer) ->
@@ -68,7 +67,6 @@ public class SecurityConfig {
         http.addFilterAfter(new OAuth2DebugFilter(), SecurityContextHolderFilter.class);
 
         return http.build();
-
     }
 
     /**
@@ -91,7 +89,7 @@ public class SecurityConfig {
                 .httpBasic(basicConfigurer -> basicConfigurer.disable() )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/login", "/css/**", "/js/**", "/images/**", "/.well-known/**",  "/error" ).permitAll()
+                        .requestMatchers( "/login", "/css/**", "/js/**", "/images/**", "/.well-known/**",  "/error","/favicon.ico" ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -99,6 +97,9 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")      // 로그인 POST 엔드포인트
                         .usernameParameter("email")
                         .passwordParameter("password")
+//                        .successHandler((request, response, authentication) -> {
+//                            request.getSession().invalidate(); // 기존 세션 제거
+//                        })
 
                         .failureUrl("/login?error=true")
                         .permitAll()
@@ -126,6 +127,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new org.springframework.web.cors.CorsConfiguration();
         config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+        config.setAllowedOrigins(Collections.singletonList("http://127.0.0.1:8080"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setExposedHeaders(Collections.singletonList("*"));
