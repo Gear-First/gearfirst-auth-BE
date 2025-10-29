@@ -23,10 +23,8 @@ public class TestController {
         System.out.println("============================================");
         return "인가 코드 : " + code;
     }
-    @GetMapping("/me")
-    public String whoAmI(Authentication authentication) {
-        System.out.println("👤 현재 사용자: " + authentication.getName());
-        System.out.println("🔐 권한: " + authentication.getAuthorities());
-        return authentication.getAuthorities().toString();
+    @GetMapping("/api/test")
+    public String test() {
+        return " 보호된 API 응답: 인증 성공!";
     }
 }
