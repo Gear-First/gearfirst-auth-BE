@@ -33,19 +33,19 @@ public class OAuth2DebugFilter extends OncePerRequestFilter {
                     System.out.println("TOKREQ " + k + "=" + String.join(",", v))
             );
         }
-        try {
-            filterChain.doFilter(request, response);
-        } catch (OAuth2AuthorizationCodeRequestAuthenticationException ex) {
-            System.out.println("\n======================");
-            System.out.println(" 🚨 [OAuth2 ERROR DETECTED]");
-            System.out.println(" Request URI: " + uri);
-            System.out.println(" Error Code: " + ex.getError().getErrorCode());
-            System.out.println(" Description: " + ex.getError().getDescription());
-            System.out.println(" Client ID: " + request.getParameter("client_id"));
-            System.out.println(" Redirect URI: " + request.getParameter("redirect_uri"));
-            System.out.println("======================\n");
-            throw ex; // 다시 던져서 Spring이 기본 처리(/error redirect) 수행하도록
-        }
+//        try {
+//            filterChain.doFilter(request, response);
+//        } catch (OAuth2AuthorizationCodeRequestAuthenticationException ex) {
+//            System.out.println("\n======================");
+//            System.out.println(" 🚨 [OAuth2 ERROR DETECTED]");
+//            System.out.println(" Request URI: " + uri);
+//            System.out.println(" Error Code: " + ex.getError().getErrorCode());
+//            System.out.println(" Description: " + ex.getError().getDescription());
+//            System.out.println(" Client ID: " + request.getParameter("client_id"));
+//            System.out.println(" Redirect URI: " + request.getParameter("redirect_uri"));
+//            System.out.println("======================\n");
+//            throw ex; // 다시 던져서 Spring이 기본 처리(/error redirect) 수행하도록
+//        }
 
         filterChain.doFilter(request, response);
     }
