@@ -34,8 +34,6 @@ public class Auth extends BaseTimeEntity {
     @Column(name = "is_first_login")
     private Boolean isFirstLogin;           //첫 로그인 여부
 
-    @Enumerated(EnumType.STRING)
-    private RoleStatus role;
 
     @PrePersist
     public void prePersist() {

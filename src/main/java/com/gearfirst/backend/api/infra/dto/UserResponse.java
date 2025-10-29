@@ -15,4 +15,5 @@ public class UserResponse {
     private String role;
     private String organizationType;
     private Long organizationId;
+    //private String scope;
 }

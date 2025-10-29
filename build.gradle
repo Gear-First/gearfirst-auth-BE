@@ -55,7 +55,7 @@ dependencies {
     runtimeOnly  'io.jsonwebtoken:jjwt-jackson:0.13.0'
 
     implementation 'org.springframework.security:spring-security-oauth2-authorization-server'
-
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server' // (게이트웨이 검증 테스트용)
     //thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 

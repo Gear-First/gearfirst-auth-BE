@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
     private final AuthRepository authRepository;
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Auth auth = authRepository.findByEmail(email)
@@ -22,7 +23,6 @@ public class CustomUserDetailService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(auth.getEmail())
                 .password(auth.getPassword())
-                .roles(auth.getRole().name())
                 .build();
     }
 }
