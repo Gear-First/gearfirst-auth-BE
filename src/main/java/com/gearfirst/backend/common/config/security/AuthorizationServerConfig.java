@@ -36,9 +36,8 @@ public class AuthorizationServerConfig {
         RegisteredClient webClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 //클라이언트 식별 정보
                 .clientId("gearfirst-client") //프론트엔드 앱 id
-                //.clientSecret("{noop}secret") // 개발 단계에서는 NoOp (운영에선 BCrypt!) 서버간의 통신 시 인증용 비밀번호
                 .clientSecret(passwordEncoder.encode("secret")) // 개발 단계에서는 NoOp (운영에선 BCrypt!)
-                //.clientAuthenticationMethod(ClientAuthenticationMethod.NONE) //TODO: PKCE 사용 시 클라이언트 인증 방법 NONE
+                //.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 //OAuth2 인증 방식
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
