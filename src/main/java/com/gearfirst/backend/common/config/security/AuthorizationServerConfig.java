@@ -20,7 +20,7 @@ import java.util.UUID;
 @Configuration
 @RequiredArgsConstructor
 public class AuthorizationServerConfig {
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     /**
      * 클라이언트 등록
      * 인가코드, 리프래시토큰, PKCE 지원 설정
@@ -31,9 +31,9 @@ public class AuthorizationServerConfig {
         RegisteredClient gearFirstClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 //클라이언트 식별 정보
                 .clientId("gearfirst-client") //프론트엔드 앱 id
-                //.clientSecret("{noop}secret") // 개발 단계에서는 NoOp (운영에선 BCrypt!)
-                //.clientSecret(passwordEncoder.encode("secret")) // 개발 단계에서는 NoOp (운영에선 BCrypt!)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                .clientSecret(passwordEncoder.encode("secret")) // 개발 단계에서는 NoOp (운영에선 BCrypt!)
+                //.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 //OAuth2 인증 방식
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
@@ -42,9 +42,9 @@ public class AuthorizationServerConfig {
                 .redirectUri("http://localhost:5173/auth/callback")
 
                 //클라이언트가 요청 가능한 접근 범위
-                .scope("user")
-                .scope("inventory")
-                .scope("order")
+                .scope("openid")
+                .scope("email")
+                .scope("offline_access")
                 //토큰 관련 정책
                 .tokenSettings(TokenSettings.builder()
                         .accessTokenTimeToLive(Duration.ofMinutes(3))

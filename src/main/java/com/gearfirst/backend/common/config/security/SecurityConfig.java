@@ -31,17 +31,6 @@ public class SecurityConfig {
     public RequestCache requestCacheBean() { // 공용 Bean으로 등록
         return new CustomRequestCache();
     }
-    /**
-     * AuthenticationManager Bean 등록
-     * 두 FilterChain이 동일한 AuthenticationManager를 공유히도록 함
-     */
-//    @Bean
-//    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-//        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-//        //여기서 UserDetailService와 PasswordEncoder를 명시적으로 설정할 수도 있음
-//        return c
-//    }
-
 
     /**
      * Authorization Server용 SecurityFilterChain
@@ -63,7 +52,10 @@ public class SecurityConfig {
                 //.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 //.with(authorizationServerConfigurer, Customizer.withDefaults())
                 .securityMatcher(endpointsMatcher)
-                .with(authorizationServerConfigurer, Customizer.withDefaults())
+                //.with(authorizationServerConfigurer, Customizer.withDefaults())
+                .with(authorizationServerConfigurer, (authorizationServer) ->
+                        authorizationServer.oidc(Customizer.withDefaults()) // OIDC 켜기
+                )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/.well-known/openid-configuration", "/.well-known/jwks.json").permitAll()
                         .anyRequest().authenticated()
@@ -116,6 +108,7 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .clearAuthentication(true)
+
 
 
                 );
