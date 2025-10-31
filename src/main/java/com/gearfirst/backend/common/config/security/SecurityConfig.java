@@ -89,7 +89,7 @@ public class SecurityConfig {
                 .httpBasic(basicConfigurer -> basicConfigurer.disable() )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/login", "/css/**", "/js/**", "/images/**", "/.well-known/**",  "/error","/favicon.ico" ).permitAll()
+                        .requestMatchers( "/login", "/css/**", "/js/**", "/images/**", "/.well-known/**",  "/error","/favicon.ico","swagger-ui/**" ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

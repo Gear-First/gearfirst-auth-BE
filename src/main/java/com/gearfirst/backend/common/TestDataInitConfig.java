@@ -23,7 +23,6 @@ public class TestDataInitConfig {
         }
 
         Auth user = Auth.builder()
-                .userId(1001L)
                 .email("test@gearfirst.com")
                 .password(passwordEncoder.encode("1234"))
                 .status(AuthStatus.ACTIVE)

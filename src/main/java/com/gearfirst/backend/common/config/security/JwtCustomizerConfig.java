@@ -1,9 +1,13 @@
 package com.gearfirst.backend.common.config.security;
 
+import com.gearfirst.backend.api.auth.entity.Auth;
 import com.gearfirst.backend.api.auth.respository.AuthRepository;
 import com.gearfirst.backend.api.infra.client.UserClient;
-import com.gearfirst.backend.api.infra.dto.UserLoginRequest;
+import com.gearfirst.backend.api.infra.dto.UserInfoRequest;
 import com.gearfirst.backend.api.infra.dto.UserResponse;
+import com.gearfirst.backend.common.exception.NotFoundException;
+import com.gearfirst.backend.common.response.ApiResponse;
+import com.gearfirst.backend.common.response.ErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,17 +38,23 @@ public class JwtCustomizerConfig {
                 Authentication principal = context.getPrincipal();
                 String email = principal.getName();
 
-                // User 서버에 사용자 정보 요청
-                UserResponse user = userClient.verifyUser(
-                        new UserLoginRequest(email, null) // JWT 발급 시 비밀번호는 이미 검증 완료
-                );
+                // authRepository에서 사용자 찾기
+                Auth auth = authRepository.findByEmail(email)
+                        .orElseThrow(() -> new NotFoundException(ErrorStatus.NOT_FOUND_USER_EXCEPTION.getMessage()));
+                Long userId = auth.getAuthId();
+
+                //  User 서버 호출 (ApiResponse로 받기)
+                ApiResponse<UserResponse> response = userClient.getUser(userId);
+
+                //  ApiResponse에서 실제 UserResponse 객체 꺼내기
+                UserResponse user = response.getData();
 
                 //  클레임에 커스텀 값 추가
-                context.getClaims().claim("sub", email);
-                context.getClaims().claim("user_id", user.getUserId());
-                context.getClaims().claim("role",user.getRole());
-                context.getClaims().claim("organization_type", user.getOrganizationType());
-                context.getClaims().claim("organization_id", user.getOrganizationId());
+                context.getClaims().claim("sub", user.getId());
+                context.getClaims().claim("name", user.getName());
+                context.getClaims().claim("rank",user.getRank());
+                context.getClaims().claim("region", user.getRegion());
+                context.getClaims().claim("work_type", user.getWorkType());
             }
         };
     }
