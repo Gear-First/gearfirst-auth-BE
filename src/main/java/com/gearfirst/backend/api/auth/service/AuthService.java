@@ -6,6 +6,6 @@ import com.gearfirst.backend.api.auth.dto.SignupRequest;
 import com.gearfirst.backend.common.result.ActResult;
 
 public interface AuthService {
-    public ActResult<Void> signup(SignupRequest request);
+    ActResult<Void> signup(SignupRequest request);
     void changePassword(ChangePasswordRequest request);
 }

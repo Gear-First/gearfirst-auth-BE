@@ -5,7 +5,6 @@ import com.gearfirst.backend.api.infra.dto.UserProfileRequest;
 import com.gearfirst.backend.api.infra.dto.UserResponse;
 import com.gearfirst.backend.common.response.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,11 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface UserClient {
     //토큰 발급시
     @GetMapping("/api/v1/getUser")
-    //UserResponse verifyUser(@RequestBody UserLoginRequest request);
     ApiResponse<UserResponse> getUser(@RequestParam Long userId);
 
     //회원가입
-    @PostMapping("/api/v1/registUser")
-    //void createUser(@RequestBody UserProfileRequest request);
-    ApiResponse<UserLoginResponse> registUser(@RequestBody UserProfileRequest request);
+    @PostMapping("/api/v1/registerUser")
+    ApiResponse<UserLoginResponse> registerUser(@RequestBody UserProfileRequest request);
 }

@@ -28,6 +28,7 @@ public class JwtCustomizerConfig {
      * - role: 권한
      * - organization_type: 본사 / 지점 / 창고 구분
      * - organization_id: 조직 PK
+     * 분산트랜잭션 상황은 맞지만 데이터 조회만 하므로 보상 트랜잭션 처리 할 필요는 없음
      */
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
@@ -48,6 +49,11 @@ public class JwtCustomizerConfig {
 
                 //  ApiResponse에서 실제 UserResponse 객체 꺼내기
                 UserResponse user = response.getData();
+
+                //User에서 응답이 실패할경우 대비
+                if(user == null){
+                    throw new NotFoundException(ErrorStatus.NOT_FOUND_USER_EXCEPTION.getMessage());
+                }
 
                 //  클레임에 커스텀 값 추가
                 context.getClaims().claim("sub", user.getId());

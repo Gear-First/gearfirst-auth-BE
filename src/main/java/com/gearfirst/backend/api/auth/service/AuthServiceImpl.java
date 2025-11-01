@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -85,7 +86,7 @@ public class AuthServiceImpl implements AuthService{
             log.info("User 서버 등록 시도 {}회차" + attempts);
 
             result = ActResult.of(() -> {
-                ApiResponse<UserLoginResponse> response = userClient.registUser(request);
+                ApiResponse<UserLoginResponse> response = userClient.registerUser(request);
                 Long userId = response.getData().getUserId();
                 return userId;
             });
@@ -111,7 +112,7 @@ public class AuthServiceImpl implements AuthService{
         return ActResult.failure(new ErrorResponse(new KnownBusinessException("User 서버 호출 3회 실패")));
     }
 
-
+    @Transactional
     @Override
     public void changePassword(ChangePasswordRequest request) {
         Auth auth = authRepository.findByUserId(request.getUserId())

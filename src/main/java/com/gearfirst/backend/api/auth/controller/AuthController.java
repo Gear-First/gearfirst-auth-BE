@@ -8,6 +8,7 @@ import com.gearfirst.backend.common.response.SuccessStatus;
 import com.gearfirst.backend.common.result.ActResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입 API", description = "회원가입을 진행합니다.")
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<Void>> signup(@RequestBody SignupRequest request) {
+    public ResponseEntity<ApiResponse<Void>> signup(@Valid  @RequestBody SignupRequest request) {
         ActResult<Void> result = authService.signup(request);
 
         return switch (result.getResultType()) {

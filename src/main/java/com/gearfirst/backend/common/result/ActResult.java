@@ -1,6 +1,6 @@
 package com.gearfirst.backend.common.result;
 
-import com.gearfirst.backend.common.exception.KnownBusinessException;
+import com.gearfirst.backend.common.exception.BaseException;
 import com.gearfirst.backend.common.response.ErrorResponse;
 
 import java.util.function.Consumer;
@@ -56,7 +56,7 @@ public abstract class ActResult<A> {
     public static <A> ActResult<A> of (Supplier<A> func){
         try{
             return new Success<>(func.get());
-        } catch (KnownBusinessException e){
+        } catch (BaseException e){
             return new Failure<>(new ErrorResponse(e));
         } catch (Exception e){
             return new Unknown<>(new ErrorResponse(e));

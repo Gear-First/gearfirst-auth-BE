@@ -57,7 +57,7 @@ public class Auth extends BaseTimeEntity {
 
     public void verifyPassword(String rawPassword, PasswordEncoder encoder) {
         if (!encoder.matches(rawPassword, this.password)) {
-            throw new UnAuthorizedException("현재 비밀번호가 일치하지 않습니다.");
+            throw new UnAuthorizedException("비밀번호가 잘못되었습니다. 다시 입력해주세요.");
         }
     }
 
