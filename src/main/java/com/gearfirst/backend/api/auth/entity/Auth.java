@@ -1,8 +1,11 @@
 package com.gearfirst.backend.api.auth.entity;
 
 import com.gearfirst.backend.common.entity.BaseTimeEntity;
+import com.gearfirst.backend.common.exception.KnownBusinessException;
+import com.gearfirst.backend.common.exception.UnAuthorizedException;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +20,7 @@ public class Auth extends BaseTimeEntity {
     @Column(name ="auth_id")
     private Long authId;
 
-    @Column(nullable = false)
+    @Column(name = "user_id", unique = true)
     private Long userId;
 
     @Column(nullable = false, unique = true, length = 100)
@@ -49,6 +52,24 @@ public class Auth extends BaseTimeEntity {
 
     public void updateLastLogin() {
         this.lastLoginAt = LocalDateTime.now();
+    }
+
+
+    public void verifyPassword(String rawPassword, PasswordEncoder encoder) {
+        if (!encoder.matches(rawPassword, this.password)) {
+            throw new UnAuthorizedException("비밀번호가 잘못되었습니다. 다시 입력해주세요.");
+        }
+    }
+
+    public void changePassword(String newPassword, PasswordEncoder encoder) {
+        this.password = encoder.encode(newPassword);
+    }
+
+    public void linkToUser(Long userId) {
+        if (this.userId != null) {
+            throw new KnownBusinessException("이미 userId가 등록된 계정입니다.");
+        }
+        this.userId = userId;
     }
 
 }

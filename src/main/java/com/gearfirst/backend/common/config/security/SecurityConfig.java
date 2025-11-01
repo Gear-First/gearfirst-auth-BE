@@ -89,7 +89,22 @@ public class SecurityConfig {
                 .httpBasic(basicConfigurer -> basicConfigurer.disable() )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/login", "/css/**", "/js/**", "/images/**", "/.well-known/**",  "/error","/favicon.ico" ).permitAll()
+                        .requestMatchers(
+                                //Swagger 관련 경로 전체 허용
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                //일반 공개 경로
+                                "/login",
+                                "/error",
+                                "/favicon.ico",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/.well-known/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -127,7 +142,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new org.springframework.web.cors.CorsConfiguration();
         config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-        config.setAllowedOrigins(Collections.singletonList("http://127.0.0.1:8080"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setExposedHeaders(Collections.singletonList("*"));

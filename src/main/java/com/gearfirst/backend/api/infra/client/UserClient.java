@@ -1,10 +1,11 @@
 package com.gearfirst.backend.api.infra.client;
 
-import com.gearfirst.backend.api.infra.dto.UserLoginRequest;
+import com.gearfirst.backend.api.infra.dto.UserLoginResponse;
+import com.gearfirst.backend.api.infra.dto.UserProfileRequest;
 import com.gearfirst.backend.api.infra.dto.UserResponse;
+import com.gearfirst.backend.common.response.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * TODO:
@@ -15,6 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
  */
 @FeignClient(name = "user-service", url = "http://localhost:8085")
 public interface UserClient {
-    @PostMapping("/api/v1/users/verify")
-    UserResponse verifyUser(@RequestBody UserLoginRequest request);
+    //토큰 발급시
+    @GetMapping("/api/v1/getUser")
+    ApiResponse<UserResponse> getUser(@RequestParam Long userId);
+
+    //회원가입
+    @PostMapping("/api/v1/registerUser")
+    ApiResponse<UserLoginResponse> registerUser(@RequestBody UserProfileRequest request);
+
+    //회원가입 실패 시 보상 트랜잭션
+    @DeleteMapping("/api/v1/rollbackUser/{userId}")
+    ApiResponse<Void> rollbackUser(@PathVariable Long userId);
 }

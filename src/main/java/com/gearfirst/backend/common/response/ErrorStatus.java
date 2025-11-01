@@ -17,8 +17,10 @@ public enum ErrorStatus {
     /** 404 NOT_FOUND */
     NOT_FOUND_USER_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 사용자 입니다."),
 
+    /** 409 CONFLICT */
+    DUPLICATE_EMAIL_EXCEPTION(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     /** 500 SERVER_ERROR */
-    FAIL_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"파일 업로드 실패하였습니다."),
+    FAIL_SIGNUP(HttpStatus.INTERNAL_SERVER_ERROR,"회원가입에 실패하였습니다."),
 
     ;
 
