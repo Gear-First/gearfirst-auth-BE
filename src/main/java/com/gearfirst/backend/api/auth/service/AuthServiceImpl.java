@@ -58,17 +58,25 @@ public class AuthServiceImpl implements AuthService{
                 System.out.println("User 서버 등록 실패 -> Auth 롤백");
                 throw new KnownBusinessException("User 서버 등록 실패로 회원가입 롤백됨");
             }
+            Long userId = ((ActResult.Success<Long>) userResult).getData();
 
             Auth auth = Auth.builder()
                     .email(request.getEmail())
                     .password(encodedPassword)
                     .build();
             System.out.println("회원 가입시 auth 서버 저장완료: {} " + auth.getEmail());
-            Long userId = ((ActResult.Success<Long>) userResult).getData();
 
             auth.linkToUser(userId);
-            authRepository.save(auth); // UserId 연동 후 최종 저장
-            System.out.println(" 회원가입 전체 성공");
+            try{
+                authRepository.save(auth);
+                System.out.println(" 회원가입 전체 성공");
+            } catch (Exception e){
+                // Auth 저장 실패 시 User 서버에 보상 트랜잭션 호출
+                //TODO: userClient.rollbackUser(userId);
+                System.out.println("UserId 연동 전 auth 저장 실패 -> 롤백");
+                throw new KnownBusinessException("Auth 저장 실패로 회원가입 롤백됨");
+            }
+
             return null;
         });
 

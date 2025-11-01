@@ -5,10 +5,7 @@ import com.gearfirst.backend.api.infra.dto.UserProfileRequest;
 import com.gearfirst.backend.api.infra.dto.UserResponse;
 import com.gearfirst.backend.common.response.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * TODO:
@@ -26,4 +23,8 @@ public interface UserClient {
     //회원가입
     @PostMapping("/api/v1/registerUser")
     ApiResponse<UserLoginResponse> registerUser(@RequestBody UserProfileRequest request);
+
+    //회원가입 실패 시 보상 트랜잭션
+    @DeleteMapping("/api/v1/rollbackUser/{userId}")
+    ApiResponse<Void> rollbackUser(@PathVariable Long userId);
 }

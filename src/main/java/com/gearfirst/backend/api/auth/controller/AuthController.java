@@ -12,10 +12,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "auth", description = "인증 API 입니다.")
@@ -32,19 +29,26 @@ public class AuthController {
 
         return switch (result.getResultType()) {
             case SUCCESS -> ApiResponse.success_only(SuccessStatus.CREATE_SIGNUP_SUCCESS);
-            case FAILURE -> ResponseEntity
+            case FAILURE -> {
+                String errorMessage = ((ActResult.Failure<Void>) result).getErrorResponse().getMessage();
+                yield ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), "회원가입 실패"));
-            case UNKNOWN -> ResponseEntity
+                    .body(ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), errorMessage));
+            }
+            case UNKNOWN -> {
+                String errorMessage = ((ActResult.Unknown<Void>) result).getErrorResponse().getMessage();
+                yield ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), "회원가입 중 알 수 없는 오류"));
+                    .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorMessage));
+            }
         };
     }
 
     @Operation(summary = "비밀번호 변경 API", description = "비밀번호 변경을 진행합니다.")
     @PostMapping("/change-password")
-    public ResponseEntity<ApiResponse<Void>> changePassword(@RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(request);
         return ApiResponse.success_only(SuccessStatus.CHANGE_PASSWORD_SUCCESS);
     }
+
 }
