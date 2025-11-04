@@ -25,23 +25,8 @@ public class AuthController {
     @Operation(summary = "회원가입 API", description = "회원가입을 진행합니다.")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> signup(@Valid  @RequestBody SignupRequest request) {
-        ActResult<Void> result = authService.signup(request);
-
-        return switch (result.getResultType()) {
-            case SUCCESS -> ApiResponse.success_only(SuccessStatus.CREATE_SIGNUP_SUCCESS);
-            case FAILURE -> {
-                String errorMessage = ((ActResult.Failure<Void>) result).getErrorResponse().getMessage();
-                yield ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.fail(HttpStatus.BAD_REQUEST.value(), errorMessage));
-            }
-            case UNKNOWN -> {
-                String errorMessage = ((ActResult.Unknown<Void>) result).getErrorResponse().getMessage();
-                yield ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.fail(HttpStatus.INTERNAL_SERVER_ERROR.value(), errorMessage));
-            }
-        };
+        authService.signup(request);
+        return ApiResponse.success_only(SuccessStatus.CREATE_SIGNUP_SUCCESS);
     }
 
     @Operation(summary = "비밀번호 변경 API", description = "비밀번호 변경을 진행합니다.")
