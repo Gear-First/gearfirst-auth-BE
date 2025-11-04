@@ -98,8 +98,8 @@ public class AuthorizationServerConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:8084") // JWT iss 값으로 사용됨
-                //.issuer("http://34.120.215.23/auth") // JWT iss 값으로 사용됨 배포용
+                //.issuer("http://localhost:8084") // JWT iss 값으로 사용됨
+                .issuer("http://34.120.215.23/auth") // JWT iss 값으로 사용됨 배포용
                 .build();
     }
 
