@@ -78,7 +78,7 @@ public class AuthorizationServerConfig {
                 .scope("email")
                 .scope("offline_access")
                 .tokenSettings(TokenSettings.builder()
-                        .accessTokenTimeToLive(Duration.ofMinutes(5))
+                        .accessTokenTimeToLive(Duration.ofMinutes(30))
                         .refreshTokenTimeToLive(Duration.ofDays(1))
                         .reuseRefreshTokens(false)
                         .build())
