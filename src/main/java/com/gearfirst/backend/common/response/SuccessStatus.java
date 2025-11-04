@@ -10,9 +10,14 @@ import org.springframework.http.HttpStatus;
 public enum SuccessStatus {
     /** 200 SUCCESS */
     SEND_SAMPLE_SUCCESS(HttpStatus.OK,"샘플 조회 성공"),
+    CHANGE_PASSWORD_SUCCESS(HttpStatus.OK, "비밀번호 변경 성공"),
 
     /** 201 CREATED */
     CREATE_SAMPLE_SUCCESS(HttpStatus.CREATED, "샘플 등록 성공"),
+    CREATE_ACCESS_TOKEN_SUCCESS(HttpStatus.CREATED, "토큰 발급 성공"),
+    CREATE_SIGNUP_SUCCESS(HttpStatus.CREATED, "회원 가입 성공"),
+
+
 
     ;
 

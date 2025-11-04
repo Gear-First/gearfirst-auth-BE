@@ -15,11 +15,14 @@ public enum ErrorStatus {
     USER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증되지 않은 사용자입니다."),
 
     /** 404 NOT_FOUND */
-    NOT_FOUND_MEMBER_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 사용자 입니다."),
+    NOT_FOUND_USER_EXCEPTION(HttpStatus.NOT_FOUND, "존재하지 않는 사용자 입니다."),
 
+    /** 409 CONFLICT */
+    DUPLICATE_EMAIL_EXCEPTION(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     /** 500 SERVER_ERROR */
-    FAIL_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR,"파일 업로드 실패하였습니다."),
-
+    FAIL_SIGNUP(HttpStatus.INTERNAL_SERVER_ERROR,"회원가입에 실패하였습니다."),
+    /** 502 BAD_GATEWAY */
+    USER_SERVER_INVALID_RESPONSE(HttpStatus.BAD_GATEWAY, "User 서버 응답이 유효하지 않습니다."),
     ;
 
     private final HttpStatus httpStatus;
