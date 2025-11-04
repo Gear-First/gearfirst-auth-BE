@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  *  - 서킷브레이커: Resilience4j/Circuit Breaker 의존성 없음
  *  - 애플리케이션 설정: Feign 클라이언트 커스텀 설정 없음
  */
-@FeignClient(name = "user-service", url = "http://localhost:8085")
+@FeignClient(name = "user-service", url = "http://34.120.215.23/user")
 public interface UserClient {
     //토큰 발급시
     @GetMapping("/api/v1/getUser")
