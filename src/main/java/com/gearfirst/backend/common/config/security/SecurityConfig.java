@@ -1,5 +1,8 @@
 package com.gearfirst.backend.common.config.security;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +23,9 @@ import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -80,6 +85,21 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                .addFilterBefore(new OncePerRequestFilter() {
+                    @Override
+                    protected void doFilterInternal(HttpServletRequest request,
+                                                    HttpServletResponse response,
+                                                    FilterChain filterChain)
+                            throws ServletException, IOException {
+                        System.out.println(">>> Host: " + request.getHeader("Host"));
+                        System.out.println(">>> X-Forwarded-Host: " + request.getHeader("X-Forwarded-Host"));
+                        System.out.println(">>> X-Forwarded-Proto: " + request.getHeader("X-Forwarded-Proto"));
+                        System.out.println(">>> X-Forwarded-Port: " + request.getHeader("X-Forwarded-Port"));
+                        System.out.println(">>> X-Forwarded-Prefix: " + request.getHeader("X-Forwarded-Prefix"));
+                        filterChain.doFilter(request, response);
+                    }
+                }, SecurityContextHolderFilter.class)
+
                 .addFilterAfter((request, response, chain) -> {
                     var auth = SecurityContextHolder.getContext().getAuthentication();
                     log.debug(" [Auth Filter] Principal: " +
