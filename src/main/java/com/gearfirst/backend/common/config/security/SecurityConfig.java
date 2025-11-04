@@ -57,6 +57,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/.well-known/openid-configuration", "/.well-known/jwks.json").permitAll()
+                        .requestMatchers("/oauth2/jwks").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
