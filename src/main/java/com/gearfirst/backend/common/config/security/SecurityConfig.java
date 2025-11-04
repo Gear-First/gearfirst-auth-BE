@@ -107,7 +107,7 @@ public class SecurityConfig {
                                 "/.well-known/**",
                                 "/auth/actuator/health/**",  // liveness/readiness 모두 허용
                                 "/actuator/health/**",  // liveness/readiness 모두 허용
-                                "/auth/actuator/info",
+                                "/auth/actuator/**",
                                 "/actuator/info"
                         ).permitAll()
                         .anyRequest().authenticated()
