@@ -36,14 +36,14 @@ public class AuthorizationServerConfig {
         RegisteredClient webClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 //클라이언트 식별 정보
                 .clientId("gearfirst-client") //프론트엔드 앱 id
-                .clientSecret(passwordEncoder.encode("secret")) // 개발 단계에서는 NoOp (운영에선 BCrypt!)
-                //.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                //.clientSecret(passwordEncoder.encode("secret")) // 개발 단계에서는 NoOp (운영에선 BCrypt!)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                //.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 //OAuth2 인증 방식
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 //인가 코드 발급 후 돌아올 주소 (프론트 주소)
-                //TODO: .redirectUri("https://app.gearfirst.com/login/callback") // 인가 코드 받은 뒤 리디렉션 URI
+                .redirectUri("https://gearfirst.vercel.app/auth/callback")   // 배포용
                 .redirectUri("http://localhost:5173/auth/callback")
 
                 //클라이언트가 요청 가능한 접근 범위
@@ -52,7 +52,7 @@ public class AuthorizationServerConfig {
                 .scope("offline_access")
                 //토큰 관련 정책
                 .tokenSettings(TokenSettings.builder()
-                        .accessTokenTimeToLive(Duration.ofMinutes(3))
+                        .accessTokenTimeToLive(Duration.ofMinutes(30))
                         .refreshTokenTimeToLive(Duration.ofDays(1))
                         .reuseRefreshTokens(false) //rotation
                         //.reuseRefreshTokens(true) //TODO: refresh token 재사용 금지
@@ -60,7 +60,7 @@ public class AuthorizationServerConfig {
                 //클라이언트 정책
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(false) // “이 앱이 정보에 접근하도록 허용하시겠습니까?” 창 비활성화
-                        .requireProofKey(false) // PKCE 필수(true) TODO: 프론트 엔드가 붙으면 활성화 예정
+                        .requireProofKey(true) // PKCE 필수(true) TODO: 프론트 엔드가 붙으면 활성화 예정
                         .build())
                 .build();
 
@@ -78,7 +78,7 @@ public class AuthorizationServerConfig {
                 .scope("email")
                 .scope("offline_access")
                 .tokenSettings(TokenSettings.builder()
-                        .accessTokenTimeToLive(Duration.ofMinutes(5))
+                        .accessTokenTimeToLive(Duration.ofMinutes(30))
                         .refreshTokenTimeToLive(Duration.ofDays(1))
                         .reuseRefreshTokens(false)
                         .build())
@@ -98,7 +98,8 @@ public class AuthorizationServerConfig {
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:8084") // JWT iss 값으로 사용됨
+                //.issuer("http://localhost:8084") // JWT iss 값으로 사용됨
+                .issuer("http://34.120.215.23/auth") // JWT iss 값으로 사용됨 배포용
                 .build();
     }
 
