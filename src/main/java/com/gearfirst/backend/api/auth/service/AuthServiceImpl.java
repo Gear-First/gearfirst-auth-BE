@@ -3,7 +3,7 @@ package com.gearfirst.backend.api.auth.service;
 import com.gearfirst.backend.api.auth.dto.ChangePasswordRequest;
 import com.gearfirst.backend.api.auth.dto.SignupRequest;
 import com.gearfirst.backend.api.auth.entity.Auth;
-import com.gearfirst.backend.api.auth.respository.AuthRepository;
+import com.gearfirst.backend.api.auth.repository.AuthRepository;
 import com.gearfirst.backend.api.infra.client.UserClient;
 import com.gearfirst.backend.api.infra.dto.UserLoginResponse;
 import com.gearfirst.backend.api.infra.dto.UserProfileRequest;
@@ -93,8 +93,16 @@ public class AuthServiceImpl implements AuthService{
             attempts++;
             log.info("User 서버 등록 시도 {}회차" + attempts);
 
+//            result = ActResult.of(() -> {
+//                ApiResponse<UserLoginResponse> response = userClient.registerUser(request);
+//                Long userId = response.getData().getUserId();
+//                return userId;
+//            });
             result = ActResult.of(() -> {
                 ApiResponse<UserLoginResponse> response = userClient.registerUser(request);
+                if (!response.isSuccess() || response.getData() == null) {
+                    throw new KnownBusinessException(ErrorStatus.USER_SERVER_INVALID_RESPONSE.getMessage());
+                }
                 Long userId = response.getData().getUserId();
                 return userId;
             });

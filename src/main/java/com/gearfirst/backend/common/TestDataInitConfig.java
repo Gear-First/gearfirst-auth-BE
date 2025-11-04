@@ -2,7 +2,7 @@ package com.gearfirst.backend.common;
 
 import com.gearfirst.backend.api.auth.entity.Auth;
 import com.gearfirst.backend.api.auth.entity.AuthStatus;
-import com.gearfirst.backend.api.auth.respository.AuthRepository;
+import com.gearfirst.backend.api.auth.repository.AuthRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

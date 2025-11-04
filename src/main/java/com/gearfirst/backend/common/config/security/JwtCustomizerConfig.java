@@ -1,9 +1,8 @@
 package com.gearfirst.backend.common.config.security;
 
 import com.gearfirst.backend.api.auth.entity.Auth;
-import com.gearfirst.backend.api.auth.respository.AuthRepository;
+import com.gearfirst.backend.api.auth.repository.AuthRepository;
 import com.gearfirst.backend.api.infra.client.UserClient;
-import com.gearfirst.backend.api.infra.dto.UserInfoRequest;
 import com.gearfirst.backend.api.infra.dto.UserResponse;
 import com.gearfirst.backend.common.exception.NotFoundException;
 import com.gearfirst.backend.common.response.ApiResponse;
