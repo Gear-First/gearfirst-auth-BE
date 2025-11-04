@@ -1,6 +1,7 @@
 package com.gearfirst.backend.common.config.security;
 
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -23,6 +24,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import java.util.Arrays;
 import java.util.Collections;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -80,7 +82,7 @@ public class SecurityConfig {
         http
                 .addFilterAfter((request, response, chain) -> {
                     var auth = SecurityContextHolder.getContext().getAuthentication();
-                    System.out.println(" [Auth Filter] Principal: " +
+                    log.debug(" [Auth Filter] Principal: " +
                             (auth != null ? auth.getName() : "null"));
                     chain.doFilter(request, response);
                 }, UsernamePasswordAuthenticationFilter.class)
