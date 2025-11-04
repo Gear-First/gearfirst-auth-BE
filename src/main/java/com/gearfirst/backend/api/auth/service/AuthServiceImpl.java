@@ -32,6 +32,7 @@ public class AuthServiceImpl implements AuthService{
      *  - User 서버 실패 시 3회 재시도
      *  - 실패 시 Auth 롤백
      */
+    @Transactional
     @Override
     public ActResult<Void> signup(SignupRequest request) {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
