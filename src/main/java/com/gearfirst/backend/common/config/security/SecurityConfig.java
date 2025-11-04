@@ -104,7 +104,9 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/.well-known/**"
+                                "/.well-known/**",
+                                "/auth/actuator/health/**",  // liveness/readiness 모두 허용
+                                "/auth/actuator/info"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
