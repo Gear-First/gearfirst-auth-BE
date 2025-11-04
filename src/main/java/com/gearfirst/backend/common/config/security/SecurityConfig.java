@@ -141,7 +141,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new org.springframework.web.cors.CorsConfiguration();
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+        config.setAllowedOrigins(Arrays.asList(
+                "http://localhost:5173",              // 로컬 개발용
+                "https://gearfirst.vercel.app"       // 프론트 배포용
+        ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setExposedHeaders(Collections.singletonList("*"));
