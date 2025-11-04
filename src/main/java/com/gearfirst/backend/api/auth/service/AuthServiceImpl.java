@@ -34,53 +34,40 @@ public class AuthServiceImpl implements AuthService{
      */
     @Transactional
     @Override
-    public ActResult<Void> signup(SignupRequest request) {
+    public void signup(SignupRequest request) {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
+        // 이메일 중복 체크
+        if(authRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
+        }
+        // 2. Auth 먼저 저장 (트랜잭션 관리)
+        Auth auth = Auth.builder()
+                .email(request.getEmail())
+                .password(encodedPassword)
+                .build();
+        authRepository.save(auth);  // 아직 커밋 안됨
+        log.info("Auth 저장 완료: {}", auth.getEmail());
+        //3. User 서버 호출
+        UserProfileRequest profileRequest = new UserProfileRequest(
+                request.getEmail(),
+                request.getName(),
+                request.getPhoneNum(),
+                request.getRank(),
+                request.getRegionId(),
+                request.getWorkTypeId()
+        );
+        ActResult<Long> userResult = callUserServerWithRetry(profileRequest, 3);
 
-        return ActResult.of(() -> {
-            // 이메일 중복 체크
-            if(authRepository.findByEmail(request.getEmail()).isPresent()){
-                throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
-            }
+        // 4. User 서버 실패 시 예외 발생 → 자동 롤백
+        if (userResult.getResultType() != ActResult.ResultType.SUCCESS) {
+            log.error("User 서버 등록 실패 -> Auth 자동 롤백");
+            throw new KnownBusinessException(ErrorStatus.USER_SERVER_INVALID_RESPONSE.getMessage());
+        }
+        // 5. userId 연동
+        Long userId = ((ActResult.Success<Long>) userResult).getData();
+        auth.linkToUser(userId);
 
-            UserProfileRequest profileRequest = new UserProfileRequest(
-                    request.getEmail(),
-                    request.getName(),
-                    request.getPhoneNum(),
-                    request.getRank(),
-                    request.getRegionId(),
-                    request.getWorkTypeId()
-            );
-
-            ActResult<Long> userResult = callUserServerWithRetry(profileRequest, 3);
-
-            //  User 서버 실패 시 롤백
-            if (userResult.getResultType() != ActResult.ResultType.SUCCESS) {
-                System.out.println("User 서버 등록 실패 -> Auth 롤백");
-                throw new KnownBusinessException("User 서버 등록 실패로 회원가입 롤백됨");
-            }
-            Long userId = ((ActResult.Success<Long>) userResult).getData();
-
-            Auth auth = Auth.builder()
-                    .email(request.getEmail())
-                    .password(encodedPassword)
-                    .build();
-            System.out.println("회원 가입시 auth 서버 저장완료: {} " + auth.getEmail());
-
-            auth.linkToUser(userId);
-            try{
-                authRepository.save(auth);
-                System.out.println(" 회원가입 전체 성공");
-            } catch (Exception e){
-                // Auth 저장 실패 시 User 서버에 보상 트랜잭션 호출
-                //TODO: userClient.rollbackUser(userId);
-                System.out.println("UserId 연동 전 auth 저장 실패 -> 롤백");
-                throw new KnownBusinessException("Auth 저장 실패로 회원가입 롤백됨");
-            }
-
-            return null;
-        });
-
+        log.info("회원가입 전체 성공");
     }
 
     /**
@@ -108,8 +95,6 @@ public class AuthServiceImpl implements AuthService{
                 return userId;
             });
 
-
-
             if (result.getResultType() == ActResult.ResultType.SUCCESS) {
                 return result;
             }
@@ -122,8 +107,6 @@ public class AuthServiceImpl implements AuthService{
             } catch (InterruptedException ignored) { }
 
         } while (attempts < maxRetry);
-
-
         // 최종 실패
         log.error("User 서버 등록 3회 실패 - UNKNOWN 상태로 반환");
         return ActResult.failure(new ErrorResponse(new KnownBusinessException("User 서버 호출 3회 실패")));
