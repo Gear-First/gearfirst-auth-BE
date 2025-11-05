@@ -130,7 +130,6 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 //일반 공개 경로
-                                "/auth/login",
                                 "/login",
                                 "/error",
                                 "/favicon.ico",
@@ -148,7 +147,6 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")               // 커스텀 로그인 페이지
                         .loginProcessingUrl("/login")      // 로그인 POST 엔드포인트
-                        .loginProcessingUrl("/auth/login")      // 로그인 POST 엔드포인트
                         .usernameParameter("email")
                         .passwordParameter("password")
 //                        .successHandler((request, response, authentication) -> {
