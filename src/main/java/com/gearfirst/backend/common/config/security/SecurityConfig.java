@@ -142,11 +142,6 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .invalidateHttpSession(true)
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            SecurityContextHolder.clearContext();    // 인증 객체 제거
-                            request.getSession().invalidate();       // 세션 완전 종료
-                            response.sendRedirect("/login");
-                        })
                         .deleteCookies("JSESSIONID","SESSION", "remember-me")
                         .clearAuthentication(true)
                 );
