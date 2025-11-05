@@ -90,26 +90,6 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .addFilterBefore(new OncePerRequestFilter() {
-                    @Override
-                    protected void doFilterInternal(HttpServletRequest request,
-                                                    HttpServletResponse response,
-                                                    FilterChain filterChain)
-                            throws ServletException, IOException {
-                        Enumeration<String> headerNames = request.getHeaderNames();
-                        while (headerNames.hasMoreElements()) {
-                            String headerName = headerNames.nextElement();
-                            System.out.println(headerName + " : " + request.getHeader(headerName));
-                        }
-                        System.out.println(">>> Host: " + request.getHeader("Host"));
-                        System.out.println(">>> X-Forwarded-Host: " + request.getHeader("X-Forwarded-Host"));
-                        System.out.println(">>> X-Forwarded-Proto: " + request.getHeader("X-Forwarded-Proto"));
-                        System.out.println(">>> X-Forwarded-Port: " + request.getHeader("X-Forwarded-Port"));
-                        System.out.println(">>> X-Forwarded-Prefix: " + request.getHeader("X-Forwarded-Prefix"));
-                        filterChain.doFilter(request, response);
-                    }
-                }, SecurityContextHolderFilter.class)
-
                 .addFilterAfter((request, response, chain) -> {
                     var auth = SecurityContextHolder.getContext().getAuthentication();
                     log.debug(" [Auth Filter] Principal: " +
@@ -159,7 +139,7 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("JSESSIONID","SESSION", "remember-me")
                         .clearAuthentication(true)
                 );
 
