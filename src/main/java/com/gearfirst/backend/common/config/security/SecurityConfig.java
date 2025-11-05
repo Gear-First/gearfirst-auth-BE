@@ -130,7 +130,7 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
                                 //일반 공개 경로
-                                "/login",
+                                "/auth/login",
                                 "/error",
                                 "/favicon.ico",
                                 "/css/**",
