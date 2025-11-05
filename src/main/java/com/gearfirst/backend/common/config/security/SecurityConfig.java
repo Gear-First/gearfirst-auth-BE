@@ -94,6 +94,7 @@ public class SecurityConfig {
                                                     HttpServletResponse response,
                                                     FilterChain filterChain)
                             throws ServletException, IOException {
+                        System.out.println("Request : " + request);
                         System.out.println(">>> Host: " + request.getHeader("Host"));
                         System.out.println(">>> X-Forwarded-Host: " + request.getHeader("X-Forwarded-Host"));
                         System.out.println(">>> X-Forwarded-Proto: " + request.getHeader("X-Forwarded-Proto"));
