@@ -172,23 +172,23 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    //로컬에서 테스트시에만
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        var config = new org.springframework.web.cors.CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(
-                "http://localhost:5173",              // 로컬 개발용
-                "https://gearfirst.vercel.app"       // 프론트 배포용
-        ));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
-        config.setAllowedHeaders(Collections.singletonList("*"));
-        config.setExposedHeaders(Collections.singletonList("*"));
-        config.setAllowCredentials(true);
-
-        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+//    //로컬에서 테스트시에만
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        var config = new org.springframework.web.cors.CorsConfiguration();
+//        config.setAllowedOrigins(Arrays.asList(
+//                "http://localhost:5173",              // 로컬 개발용
+//                "https://gearfirst.vercel.app"       // 프론트 배포용
+//        ));
+//        config.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
+//        config.setAllowedHeaders(Collections.singletonList("*"));
+//        config.setExposedHeaders(Collections.singletonList("*"));
+//        config.setAllowCredentials(true);
+//
+//        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", config);
+//        return source;
+//    }
 
     @Bean
     public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
