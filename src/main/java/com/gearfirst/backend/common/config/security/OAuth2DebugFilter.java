@@ -32,7 +32,6 @@ public class OAuth2DebugFilter extends OncePerRequestFilter {
                     System.out.println("TOKREQ " + k + "=" + String.join(",", v))
             );
         }
-
         filterChain.doFilter(request, response);
     }
 }
