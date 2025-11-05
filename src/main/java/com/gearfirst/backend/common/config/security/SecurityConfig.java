@@ -75,7 +75,7 @@ public class SecurityConfig {
                 //.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/auth/login")));
 
         http.addFilterAfter(new OAuth2DebugFilter(), SecurityContextHolderFilter.class);
 
@@ -145,19 +145,19 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")               // 커스텀 로그인 페이지
-                        .loginProcessingUrl("/login")      // 로그인 POST 엔드포인트
+                        .loginPage("/auth/login")               // 커스텀 로그인 페이지
+                        .loginProcessingUrl("/auth/login")      // 로그인 POST 엔드포인트
                         .usernameParameter("email")
                         .passwordParameter("password")
 //                        .successHandler((request, response, authentication) -> {
 //                            request.getSession().invalidate(); // 기존 세션 제거
 //                        })
 
-                        .failureUrl("/login?error=true")
+                        .failureUrl("/auth/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/auth/logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .clearAuthentication(true)
