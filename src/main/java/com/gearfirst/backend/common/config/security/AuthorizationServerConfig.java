@@ -33,7 +33,7 @@ public class AuthorizationServerConfig {
         //클라이언트를 구분하기 위한 고유 ID
 
         //1. 웹 클라이언트 (React, Vue 등)
-        RegisteredClient webClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        RegisteredClient webClient = RegisteredClient.withId("gearfirst-client-id")
                 //클라이언트 식별 정보
                 .clientId("gearfirst-client") //프론트엔드 앱 id
                 //.clientSecret(passwordEncoder.encode("secret")) // 개발 단계에서는 NoOp (운영에선 BCrypt!)
