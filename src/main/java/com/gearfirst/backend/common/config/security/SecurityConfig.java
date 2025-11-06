@@ -124,7 +124,8 @@ public class SecurityConfig {
                                 "/actuator/health/**",  // liveness/readiness 모두 허용
                                 "/auth/actuator/**",
                                 "/actuator/info",
-                                "/**/api/v1/auth/signup" // 회원가입 허용
+                                "/api/v1/auth/signup" // 회원가입 허용
+                                "/auth/api/v1/auth/signup" // 회원가입 허용
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
