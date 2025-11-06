@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public class CreateAccount {
     private String email;
-    private String password;
+    private String personalEmail;
 }

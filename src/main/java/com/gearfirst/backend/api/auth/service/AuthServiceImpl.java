@@ -8,6 +8,7 @@ import com.gearfirst.backend.api.auth.repository.AuthRepository;
 import com.gearfirst.backend.api.infra.client.UserClient;
 import com.gearfirst.backend.api.infra.dto.UserLoginResponse;
 import com.gearfirst.backend.api.infra.dto.UserProfileRequest;
+import com.gearfirst.backend.api.mail.MailService;
 import com.gearfirst.backend.common.exception.KnownBusinessException;
 import com.gearfirst.backend.common.exception.NotFoundException;
 import com.gearfirst.backend.common.response.ApiResponse;
@@ -16,6 +17,7 @@ import com.gearfirst.backend.common.response.ErrorStatus;
 import com.gearfirst.backend.common.result.ActResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,15 +29,25 @@ public class AuthServiceImpl implements AuthService{
     private final PasswordEncoder passwordEncoder;
     private final AuthRepository authRepository;
     private final UserClient userClient;
+    private final MailService mailService;
 
     @Transactional
     @Override
     public void createAccount(CreateAccount request) {
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String tempPassword = RandomStringUtils.random(10, true, true);
+        String encodedPassword = passwordEncoder.encode(tempPassword);
+
         // 이메일 중복 체크
         if(authRepository.findByEmail(request.getEmail()).isPresent()){
             throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
         }
+        //  이메일 발송
+        try {
+            mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
+        } catch (Exception e) {
+            throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
+        }
+
         Auth auth = Auth.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
