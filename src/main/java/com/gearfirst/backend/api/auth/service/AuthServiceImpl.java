@@ -1,6 +1,7 @@
 package com.gearfirst.backend.api.auth.service;
 
 import com.gearfirst.backend.api.auth.dto.ChangePasswordRequest;
+import com.gearfirst.backend.api.auth.dto.CreateAccount;
 import com.gearfirst.backend.api.auth.dto.SignupRequest;
 import com.gearfirst.backend.api.auth.entity.Auth;
 import com.gearfirst.backend.api.auth.repository.AuthRepository;
@@ -26,6 +27,21 @@ public class AuthServiceImpl implements AuthService{
     private final PasswordEncoder passwordEncoder;
     private final AuthRepository authRepository;
     private final UserClient userClient;
+
+    @Transactional
+    @Override
+    public void createAccount(CreateAccount request) {
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        // 이메일 중복 체크
+        if(authRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
+        }
+        Auth auth = Auth.builder()
+                .email(request.getEmail())
+                .password(encodedPassword)
+                .build();
+        authRepository.save(auth);
+    }
 
     /**
      * 회원가입 - Auth 저장 후 User 서버에 사용자 프로필 등록
