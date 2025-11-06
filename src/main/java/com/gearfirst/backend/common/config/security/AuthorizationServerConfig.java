@@ -37,7 +37,7 @@ public class AuthorizationServerConfig {
                 //클라이언트 식별 정보
                 .clientId("gearfirst-client") //프론트엔드 앱 id
                 .clientSecret(passwordEncoder.encode("secret")) // 개발 단계에서는 NoOp (운영에선 BCrypt!)
-                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                //.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 //OAuth2 인증 방식
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
