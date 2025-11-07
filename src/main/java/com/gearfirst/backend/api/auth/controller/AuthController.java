@@ -2,6 +2,7 @@ package com.gearfirst.backend.api.auth.controller;
 
 import com.gearfirst.backend.api.auth.dto.ChangePasswordRequest;
 import com.gearfirst.backend.api.auth.dto.CreateAccount;
+import com.gearfirst.backend.api.auth.dto.RegenerateTempPasswordRequest;
 import com.gearfirst.backend.api.auth.dto.SignupRequest;
 import com.gearfirst.backend.api.auth.service.AuthService;
 import com.gearfirst.backend.common.response.ApiResponse;
@@ -38,8 +39,8 @@ public class AuthController {
     }
     @Operation(summary = "임시 비밀번호 새로 발급 API", description = "임시비밀번호를 개인 메일로 다시 발송합니다..")
     @PostMapping("/regenerate-temp-password")
-    public ResponseEntity<ApiResponse<Void>> regenerateTempPassword(@RequestBody String email) {
-        authService.regenerateTempPassword(email);
+    public ResponseEntity<ApiResponse<Void>> regenerateTempPassword(@RequestBody RegenerateTempPasswordRequest request) {
+        authService.regenerateTempPassword(request.getEmail());
         return ApiResponse.success_only(SuccessStatus.CREATE_TEMP_PASSWORD_SUCCESS);
     }
 
