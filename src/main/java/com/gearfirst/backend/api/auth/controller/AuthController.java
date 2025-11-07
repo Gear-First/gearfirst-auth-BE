@@ -2,6 +2,7 @@ package com.gearfirst.backend.api.auth.controller;
 
 import com.gearfirst.backend.api.auth.dto.ChangePasswordRequest;
 import com.gearfirst.backend.api.auth.dto.CreateAccount;
+import com.gearfirst.backend.api.auth.dto.RegenerateTempPasswordRequest;
 import com.gearfirst.backend.api.auth.dto.SignupRequest;
 import com.gearfirst.backend.api.auth.service.AuthService;
 import com.gearfirst.backend.common.response.ApiResponse;
@@ -24,12 +25,6 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "회원가입 API", description = "회원가입을 진행합니다.")
-    @PostMapping("/signup/test")
-    public ResponseEntity<ApiResponse<Void>> signup(@Valid  @RequestBody SignupRequest request) {
-        authService.signup(request);
-        return ApiResponse.success_only(SuccessStatus.CREATE_SIGNUP_SUCCESS);
-    }
-    @Operation(summary = "회원가입 API", description = "회원가입을 진행합니다.")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> createAccount(@RequestBody CreateAccount request) {
         authService.createAccount(request);
@@ -42,5 +37,13 @@ public class AuthController {
         authService.changePassword(request);
         return ApiResponse.success_only(SuccessStatus.CHANGE_PASSWORD_SUCCESS);
     }
+    @Operation(summary = "임시 비밀번호 새로 발급 API", description = "임시비밀번호를 개인 메일로 다시 발송합니다..")
+    @PostMapping("/regenerate-temp-password")
+    public ResponseEntity<ApiResponse<Void>> regenerateTempPassword(@RequestBody RegenerateTempPasswordRequest request) {
+        authService.regenerateTempPassword(request.getEmail());
+        return ApiResponse.success_only(SuccessStatus.CREATE_TEMP_PASSWORD_SUCCESS);
+    }
+
+
 
 }

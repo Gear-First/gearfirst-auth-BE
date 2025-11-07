@@ -20,11 +20,4 @@ public interface UserClient {
     @GetMapping("/api/v1/getUser")
     ApiResponse<UserResponse> getUser(@RequestParam Long userId);
 
-    //회원가입
-    @PostMapping("/api/v1/registerUser")
-    ApiResponse<UserLoginResponse> registerUser(@RequestBody UserProfileRequest request);
-
-    //회원가입 실패 시 보상 트랜잭션
-    @DeleteMapping("/api/v1/rollbackUser/{userId}")
-    ApiResponse<Void> rollbackUser(@PathVariable Long userId);
 }
