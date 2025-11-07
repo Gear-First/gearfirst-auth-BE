@@ -9,5 +9,5 @@ import com.gearfirst.backend.common.result.ActResult;
 public interface AuthService {
     void createAccount(CreateAccount request);
     void changePassword(ChangePasswordRequest request);
-    void regenerateTempPassword(String email);
+    void regenerateTempPassword(String email,String personalEmail);
 }

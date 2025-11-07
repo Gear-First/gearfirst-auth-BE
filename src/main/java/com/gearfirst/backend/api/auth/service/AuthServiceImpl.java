@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService{
                     try{
                         mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
                     }catch (Exception e) {
-                        throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
+                        log.error("메일 발송 실패 - personalEmail={}, message={}", request.getPersonalEmail(), e.getMessage(), e);
                     }
 
                 }
@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService{
 
     @Transactional
     @Override
-    public void regenerateTempPassword(String email) {
+    public void regenerateTempPassword(String email,String personalEmail) {
         Auth auth = authRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(ErrorStatus.NOT_FOUND_USER_EXCEPTION.getMessage()));
         // 새 임시 비밀번호 생성
@@ -96,7 +96,7 @@ public class AuthServiceImpl implements AuthService{
             @Override
             public void afterCommit() {
                 try {
-                    mailService.sendUserRegistrationMail(auth.getEmail(), newTempPassword);
+                    mailService.sendUserRegistrationMail(personalEmail, newTempPassword);
                 } catch (Exception e) {
                     throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
                 }
