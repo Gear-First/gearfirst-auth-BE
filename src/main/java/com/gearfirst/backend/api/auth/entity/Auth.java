@@ -64,6 +64,9 @@ public class Auth extends BaseTimeEntity {
     public void changePassword(String newPassword, PasswordEncoder encoder) {
         this.password = encoder.encode(newPassword);
     }
+    public void updatePassword(String newEncodedPassword) {
+        this.password = newEncodedPassword;
+    }
 
     public void linkToUser(Long userId) {
         if (this.userId != null) {

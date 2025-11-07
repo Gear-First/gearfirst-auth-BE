@@ -24,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.security.SecureRandom;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class AuthServiceImpl implements AuthService{
     @Transactional
     @Override
     public void createAccount(CreateAccount request) {
-        String tempPassword = RandomStringUtils.random(10, true, true);
+        String tempPassword = RandomStringUtils.random(10, 0, 0, true, true, null, new SecureRandom());
         String encodedPassword = passwordEncoder.encode(tempPassword);
 
         // 이메일 중복 체크
@@ -76,5 +78,29 @@ public class AuthServiceImpl implements AuthService{
             throw new KnownBusinessException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         }
         auth.changePassword(request.getNewPassword(), passwordEncoder);
+    }
+
+    @Transactional
+    @Override
+    public void regenerateTempPassword(String email) {
+        Auth auth = authRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.NOT_FOUND_USER_EXCEPTION.getMessage()));
+        // 새 임시 비밀번호 생성
+        String newTempPassword = RandomStringUtils.random(10, 0, 0, true, true, null, new SecureRandom());
+        String encoded = passwordEncoder.encode(newTempPassword);
+
+        // 비밀번호 갱신
+        auth.updatePassword(encoded);
+        authRepository.save(auth);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                try {
+                    mailService.sendUserRegistrationMail(auth.getEmail(), newTempPassword);
+                } catch (Exception e) {
+                    throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
+                }
+            }
+        });
     }
 }
