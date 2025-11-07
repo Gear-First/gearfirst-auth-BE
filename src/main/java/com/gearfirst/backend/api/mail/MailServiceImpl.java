@@ -36,7 +36,7 @@ public class MailServiceImpl implements MailService {
             mailSender.send(message);
 
         } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new RuntimeException("이메일 전송 실패: " + e.getMessage());
+            throw new RuntimeException("이메일 전송 실패: " + e.getMessage(),e);
         }
     }
 
