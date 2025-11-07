@@ -40,8 +40,7 @@ public class AuthServiceImpl implements AuthService{
     public void createAccount(CreateAccount request) {
         String tempPassword = RandomStringUtils.random(10, 0, 0, true, true, null, new SecureRandom());
         String encodedPassword = passwordEncoder.encode(tempPassword);
-        log.info("tempPassword: {}", tempPassword);
-
+        //log.info("tempPassword: {}", tempPassword);
 
         // 이메일 중복 체크
         if(authRepository.findByEmail(request.getEmail()).isPresent()){
@@ -59,7 +58,7 @@ public class AuthServiceImpl implements AuthService{
                 @Override
                 public void afterCommit() {
                     try{
-                        //mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
+                        mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
                     }catch (Exception e) {
                         log.error("메일 발송 실패 - personalEmail={}, message={}", request.getPersonalEmail(), e.getMessage(), e);
                     }
@@ -67,7 +66,7 @@ public class AuthServiceImpl implements AuthService{
                 }
             });
         } else {
-            //mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
+            mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
         }
     }
 
@@ -99,7 +98,7 @@ public class AuthServiceImpl implements AuthService{
             @Override
             public void afterCommit() {
                 try {
-                    //mailService.sendUserRegistrationMail(personalEmail, newTempPassword);
+                    mailService.sendUserRegistrationMail(personalEmail, newTempPassword);
                 } catch (Exception e) {
                     throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
                 }
