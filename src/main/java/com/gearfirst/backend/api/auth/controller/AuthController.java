@@ -37,7 +37,7 @@ public class AuthController {
         return ApiResponse.success_only(SuccessStatus.CHANGE_PASSWORD_SUCCESS);
     }
     @Operation(summary = "임시 비밀번호 새로 발급 API", description = "임시비밀번호를 개인 메일로 다시 발송합니다..")
-    @PostMapping("/change-password")
+    @PostMapping("/regenerate-temp-password")
     public ResponseEntity<ApiResponse<Void>> regenerateTempPassword(@RequestBody String email) {
         authService.regenerateTempPassword(email);
         return ApiResponse.success_only(SuccessStatus.CREATE_TEMP_PASSWORD_SUCCESS);
