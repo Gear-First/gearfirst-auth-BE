@@ -21,6 +21,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
 @Service
@@ -40,18 +42,28 @@ public class AuthServiceImpl implements AuthService{
         if(authRepository.findByEmail(request.getEmail()).isPresent()){
             throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
         }
-        //  이메일 발송
-        try {
-            mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
-        } catch (Exception e) {
-            throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
-        }
 
         Auth auth = Auth.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .build();
         authRepository.save(auth);
+
+        if(TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    try{
+                        mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
+                    }catch (Exception e) {
+                        throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
+                    }
+
+                }
+            });
+        } else {
+            mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
+        }
     }
 
     @Transactional
