@@ -34,9 +34,10 @@ public class AuthServiceImpl implements AuthService{
     private final AuthRepository authRepository;
     private final MailService mailService;
 
+    //이메일 복구되면 바꿀 예정
     @Transactional
     @Override
-    public void createAccount(CreateAccount request) {
+    public String createAccount(CreateAccount request) {
         String tempPassword = RandomStringUtils.random(10, 0, 0, true, true, null, new SecureRandom());
         log.info("passwordEncoder class: {}", passwordEncoder.getClass());
         String encodedPassword = passwordEncoder.encode(tempPassword);
@@ -69,6 +70,7 @@ public class AuthServiceImpl implements AuthService{
         } else {
             //mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
         }
+        return tempPassword;
     }
 
     @Transactional
