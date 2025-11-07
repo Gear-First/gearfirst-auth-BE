@@ -38,7 +38,10 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public void createAccount(CreateAccount request) {
         String tempPassword = RandomStringUtils.random(10, 0, 0, true, true, null, new SecureRandom());
+        log.info("passwordEncoder class: {}", passwordEncoder.getClass());
         String encodedPassword = passwordEncoder.encode(tempPassword);
+        log.info("encodedPassword: {}", encodedPassword);
+
 
         // 이메일 중복 체크
         if(authRepository.findByEmail(request.getEmail()).isPresent()){
