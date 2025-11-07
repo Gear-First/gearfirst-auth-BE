@@ -37,11 +37,10 @@ public class AuthServiceImpl implements AuthService{
     //이메일 복구되면 바꿀 예정
     @Transactional
     @Override
-    public String createAccount(CreateAccount request) {
+    public void createAccount(CreateAccount request) {
         String tempPassword = RandomStringUtils.random(10, 0, 0, true, true, null, new SecureRandom());
-        log.info("passwordEncoder class: {}", passwordEncoder.getClass());
         String encodedPassword = passwordEncoder.encode(tempPassword);
-        log.info("encodedPassword: {}", encodedPassword);
+        log.info("tempPassword: {}", tempPassword);
 
 
         // 이메일 중복 체크
@@ -70,7 +69,6 @@ public class AuthServiceImpl implements AuthService{
         } else {
             //mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
         }
-        return tempPassword;
     }
 
     @Transactional
