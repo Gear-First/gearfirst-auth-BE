@@ -40,7 +40,7 @@ public class AuthController {
     @Operation(summary = "임시 비밀번호 새로 발급 API", description = "임시비밀번호를 개인 메일로 다시 발송합니다..")
     @PostMapping("/regenerate-temp-password")
     public ResponseEntity<ApiResponse<Void>> regenerateTempPassword(@RequestBody RegenerateTempPasswordRequest request) {
-        authService.regenerateTempPassword(request.getEmail());
+        authService.regenerateTempPassword(request.getEmail(),request.getPersonalEmail());
         return ApiResponse.success_only(SuccessStatus.CREATE_TEMP_PASSWORD_SUCCESS);
     }
 
