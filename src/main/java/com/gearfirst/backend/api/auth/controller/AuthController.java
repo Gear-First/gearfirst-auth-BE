@@ -24,12 +24,6 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "회원가입 API", description = "회원가입을 진행합니다.")
-    @PostMapping("/signup/test")
-    public ResponseEntity<ApiResponse<Void>> signup(@Valid  @RequestBody SignupRequest request) {
-        authService.signup(request);
-        return ApiResponse.success_only(SuccessStatus.CREATE_SIGNUP_SUCCESS);
-    }
-    @Operation(summary = "회원가입 API", description = "회원가입을 진행합니다.")
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> createAccount(@RequestBody CreateAccount request) {
         authService.createAccount(request);

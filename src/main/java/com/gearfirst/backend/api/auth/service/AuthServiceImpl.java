@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService{
     private final PasswordEncoder passwordEncoder;
     private final AuthRepository authRepository;
-    private final UserClient userClient;
     private final MailService mailService;
 
     @Transactional
@@ -53,91 +52,6 @@ public class AuthServiceImpl implements AuthService{
                 .password(encodedPassword)
                 .build();
         authRepository.save(auth);
-    }
-
-    /**
-     * 회원가입 - Auth 저장 후 User 서버에 사용자 프로필 등록
-     *  - User 서버 실패 시 3회 재시도
-     *  - 실패 시 Auth 롤백
-     */
-    @Transactional
-    @Override
-    public void signup(SignupRequest request) {
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-        // 이메일 중복 체크
-        if(authRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
-        }
-        // 2. Auth 먼저 저장 (트랜잭션 관리)
-        Auth auth = Auth.builder()
-                .email(request.getEmail())
-                .password(encodedPassword)
-                .build();
-        authRepository.save(auth);  // 아직 커밋 안됨
-        log.info("Auth 저장 완료: {}", auth.getEmail());
-        //3. User 서버 호출
-        UserProfileRequest profileRequest = new UserProfileRequest(
-                request.getEmail(),
-                request.getName(),
-                request.getPhoneNum(),
-                request.getRank(),
-                request.getRegionId(),
-                request.getWorkTypeId()
-        );
-        ActResult<Long> userResult = callUserServerWithRetry(profileRequest, 3);
-
-        // 4. User 서버 실패 시 예외 발생 → 자동 롤백
-        if (userResult.getResultType() != ActResult.ResultType.SUCCESS) {
-            log.error("User 서버 등록 실패 -> Auth 자동 롤백");
-            throw new KnownBusinessException(ErrorStatus.USER_SERVER_INVALID_RESPONSE.getMessage());
-        }
-        // 5. userId 연동
-        Long userId = ((ActResult.Success<Long>) userResult).getData();
-        auth.linkToUser(userId);
-
-        log.info("회원가입 전체 성공");
-    }
-
-    /**
-     * User 서버 호출 재시도 로직
-     */
-    private ActResult<Long> callUserServerWithRetry(UserProfileRequest request, int maxRetry) {
-        int attempts = 0;
-        ActResult<Long> result;
-
-        do {
-            attempts++;
-            log.info("User 서버 등록 시도 {}회차" + attempts);
-
-//            result = ActResult.of(() -> {
-//                ApiResponse<UserLoginResponse> response = userClient.registerUser(request);
-//                Long userId = response.getData().getUserId();
-//                return userId;
-//            });
-            result = ActResult.of(() -> {
-                ApiResponse<UserLoginResponse> response = userClient.registerUser(request);
-                if (!response.isSuccess() || response.getData() == null) {
-                    throw new KnownBusinessException(ErrorStatus.USER_SERVER_INVALID_RESPONSE.getMessage());
-                }
-                Long userId = response.getData().getUserId();
-                return userId;
-            });
-
-            if (result.getResultType() == ActResult.ResultType.SUCCESS) {
-                return result;
-            }
-
-            log.error("User 서버 등록 실패 ({}회차)" + attempts);
-
-            // 재시도 사이에 잠시 대기 (optional)
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException ignored) { }
-
-        } while (attempts < maxRetry);
-        // 최종 실패
-        log.error("User 서버 등록 3회 실패 - UNKNOWN 상태로 반환");
-        return ActResult.failure(new ErrorResponse(new KnownBusinessException("User 서버 호출 3회 실패")));
     }
 
     @Transactional
