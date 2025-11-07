@@ -8,6 +8,7 @@ import com.gearfirst.backend.api.auth.repository.AuthRepository;
 import com.gearfirst.backend.api.infra.client.UserClient;
 import com.gearfirst.backend.api.infra.dto.UserLoginResponse;
 import com.gearfirst.backend.api.infra.dto.UserProfileRequest;
+import com.gearfirst.backend.api.mail.MailService;
 import com.gearfirst.backend.common.exception.KnownBusinessException;
 import com.gearfirst.backend.common.exception.NotFoundException;
 import com.gearfirst.backend.common.response.ApiResponse;
@@ -16,9 +17,14 @@ import com.gearfirst.backend.common.response.ErrorStatus;
 import com.gearfirst.backend.common.result.ActResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.security.SecureRandom;
 
 @Slf4j
 @Service
@@ -26,106 +32,40 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService{
     private final PasswordEncoder passwordEncoder;
     private final AuthRepository authRepository;
-    private final UserClient userClient;
+    private final MailService mailService;
 
     @Transactional
     @Override
     public void createAccount(CreateAccount request) {
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String tempPassword = RandomStringUtils.random(10, 0, 0, true, true, null, new SecureRandom());
+        String encodedPassword = passwordEncoder.encode(tempPassword);
+
         // 이메일 중복 체크
         if(authRepository.findByEmail(request.getEmail()).isPresent()){
             throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
         }
+
         Auth auth = Auth.builder()
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .build();
         authRepository.save(auth);
-    }
 
-    /**
-     * 회원가입 - Auth 저장 후 User 서버에 사용자 프로필 등록
-     *  - User 서버 실패 시 3회 재시도
-     *  - 실패 시 Auth 롤백
-     */
-    @Transactional
-    @Override
-    public void signup(SignupRequest request) {
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-        // 이메일 중복 체크
-        if(authRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
-        }
-        // 2. Auth 먼저 저장 (트랜잭션 관리)
-        Auth auth = Auth.builder()
-                .email(request.getEmail())
-                .password(encodedPassword)
-                .build();
-        authRepository.save(auth);  // 아직 커밋 안됨
-        log.info("Auth 저장 완료: {}", auth.getEmail());
-        //3. User 서버 호출
-        UserProfileRequest profileRequest = new UserProfileRequest(
-                request.getEmail(),
-                request.getName(),
-                request.getPhoneNum(),
-                request.getRank(),
-                request.getRegionId(),
-                request.getWorkTypeId()
-        );
-        ActResult<Long> userResult = callUserServerWithRetry(profileRequest, 3);
+        if(TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    try{
+                        mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
+                    }catch (Exception e) {
+                        throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
+                    }
 
-        // 4. User 서버 실패 시 예외 발생 → 자동 롤백
-        if (userResult.getResultType() != ActResult.ResultType.SUCCESS) {
-            log.error("User 서버 등록 실패 -> Auth 자동 롤백");
-            throw new KnownBusinessException(ErrorStatus.USER_SERVER_INVALID_RESPONSE.getMessage());
-        }
-        // 5. userId 연동
-        Long userId = ((ActResult.Success<Long>) userResult).getData();
-        auth.linkToUser(userId);
-
-        log.info("회원가입 전체 성공");
-    }
-
-    /**
-     * User 서버 호출 재시도 로직
-     */
-    private ActResult<Long> callUserServerWithRetry(UserProfileRequest request, int maxRetry) {
-        int attempts = 0;
-        ActResult<Long> result;
-
-        do {
-            attempts++;
-            log.info("User 서버 등록 시도 {}회차" + attempts);
-
-//            result = ActResult.of(() -> {
-//                ApiResponse<UserLoginResponse> response = userClient.registerUser(request);
-//                Long userId = response.getData().getUserId();
-//                return userId;
-//            });
-            result = ActResult.of(() -> {
-                ApiResponse<UserLoginResponse> response = userClient.registerUser(request);
-                if (!response.isSuccess() || response.getData() == null) {
-                    throw new KnownBusinessException(ErrorStatus.USER_SERVER_INVALID_RESPONSE.getMessage());
                 }
-                Long userId = response.getData().getUserId();
-                return userId;
             });
-
-            if (result.getResultType() == ActResult.ResultType.SUCCESS) {
-                return result;
-            }
-
-            log.error("User 서버 등록 실패 ({}회차)" + attempts);
-
-            // 재시도 사이에 잠시 대기 (optional)
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException ignored) { }
-
-        } while (attempts < maxRetry);
-        // 최종 실패
-        log.error("User 서버 등록 3회 실패 - UNKNOWN 상태로 반환");
-        return ActResult.failure(new ErrorResponse(new KnownBusinessException("User 서버 호출 3회 실패")));
+        } else {
+            mailService.sendUserRegistrationMail(request.getPersonalEmail(), tempPassword);
+        }
     }
 
     @Transactional
@@ -138,5 +78,29 @@ public class AuthServiceImpl implements AuthService{
             throw new KnownBusinessException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
         }
         auth.changePassword(request.getNewPassword(), passwordEncoder);
+    }
+
+    @Transactional
+    @Override
+    public void regenerateTempPassword(String email) {
+        Auth auth = authRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.NOT_FOUND_USER_EXCEPTION.getMessage()));
+        // 새 임시 비밀번호 생성
+        String newTempPassword = RandomStringUtils.random(10, 0, 0, true, true, null, new SecureRandom());
+        String encoded = passwordEncoder.encode(newTempPassword);
+
+        // 비밀번호 갱신
+        auth.updatePassword(encoded);
+        authRepository.save(auth);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                try {
+                    mailService.sendUserRegistrationMail(auth.getEmail(), newTempPassword);
+                } catch (Exception e) {
+                    throw new IllegalStateException("메일 발송 중 오류가 발생했습니다: " + e.getMessage());
+                }
+            }
+        });
     }
 }

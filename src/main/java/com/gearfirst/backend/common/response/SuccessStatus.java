@@ -16,6 +16,7 @@ public enum SuccessStatus {
     CREATE_SAMPLE_SUCCESS(HttpStatus.CREATED, "샘플 등록 성공"),
     CREATE_ACCESS_TOKEN_SUCCESS(HttpStatus.CREATED, "토큰 발급 성공"),
     CREATE_SIGNUP_SUCCESS(HttpStatus.CREATED, "회원 가입 성공"),
+    CREATE_TEMP_PASSWORD_SUCCESS(HttpStatus.CREATED, "임시 비밀번호 발송 성공"),
 
 
 
