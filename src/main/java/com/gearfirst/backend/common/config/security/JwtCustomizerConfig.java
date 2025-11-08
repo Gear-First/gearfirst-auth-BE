@@ -41,7 +41,7 @@ public class JwtCustomizerConfig {
                 // authRepository에서 사용자 찾기
                 Auth auth = authRepository.findByEmail(email)
                         .orElseThrow(() -> new NotFoundException(ErrorStatus.NOT_FOUND_USER_EXCEPTION.getMessage()));
-                Long userId = auth.getUserId();
+                Long userId = auth.getAuthId();
 
                 //  User 서버 호출 (ApiResponse로 받기)
                 ApiResponse<UserResponse> response = userClient.getUser(userId);
