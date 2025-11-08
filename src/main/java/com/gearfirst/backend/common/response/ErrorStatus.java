@@ -19,6 +19,7 @@ public enum ErrorStatus {
 
     /** 409 CONFLICT */
     DUPLICATE_EMAIL_EXCEPTION(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
+    ESSENTIAL_USERID_EXCEPTION(HttpStatus.CONFLICT, "userId는 필수 입니다."),
     /** 500 SERVER_ERROR */
     FAIL_SIGNUP(HttpStatus.INTERNAL_SERVER_ERROR,"회원가입에 실패하였습니다."),
     /** 502 BAD_GATEWAY */

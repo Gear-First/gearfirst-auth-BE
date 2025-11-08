@@ -45,6 +45,9 @@ public class AuthServiceImpl implements AuthService{
         if(authRepository.findByEmail(request.getEmail()).isPresent()){
             throw new KnownBusinessException(ErrorStatus.DUPLICATE_EMAIL_EXCEPTION.getMessage());
         }
+        if(request.getUserId() == null){
+            throw new KnownBusinessException(ErrorStatus.ESSENTIAL_USERID_EXCEPTION.getMessage());
+        }
 
         Auth auth = Auth.builder()
                 .userId(request.getUserId())
