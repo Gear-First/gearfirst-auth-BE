@@ -34,7 +34,6 @@ public class AuthServiceImpl implements AuthService{
     private final AuthRepository authRepository;
     private final MailService mailService;
 
-    //이메일 복구되면 바꿀 예정
     @Transactional
     @Override
     public void createAccount(CreateAccount request) {
@@ -48,6 +47,7 @@ public class AuthServiceImpl implements AuthService{
         }
 
         Auth auth = Auth.builder()
+                .userId(request.getUserId())
                 .email(request.getEmail())
                 .password(encodedPassword)
                 .build();
