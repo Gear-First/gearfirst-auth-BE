@@ -157,7 +157,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    //로컬에서 테스트시에만
+    //iOS나 Android의 OAuth 2.0 PKCE 플로우는 CORS가 적용되지 않음
+    //네이티브 앱이 자체적으로 HTTP 요청을 보내는 클라이언트이기 때문
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         var config = new org.springframework.web.cors.CorsConfiguration();
