@@ -32,7 +32,7 @@ public class AuthController {
     }
 
     @Operation(summary = "비밀번호 변경 API", description = "비밀번호 변경을 진행합니다.")
-    @PostMapping("/change-password/change-password")
+    @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(request);
         return ApiResponse.success_only(SuccessStatus.CHANGE_PASSWORD_SUCCESS);
