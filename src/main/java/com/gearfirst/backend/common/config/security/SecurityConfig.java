@@ -125,7 +125,9 @@ public class SecurityConfig {
                                 "/auth/actuator/**",
                                 "/actuator/info",
                                 "/api/v1/auth/signup", // 회원가입 허용
-                                "/auth/api/v1/auth/signup" // 회원가입 허용
+                                "/auth/api/v1/auth/signup", // 회원가입 허용
+                                "/api/v1/auth/delete",       //회원 삭제
+                                "/auth/api/v1/auth/delete"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
