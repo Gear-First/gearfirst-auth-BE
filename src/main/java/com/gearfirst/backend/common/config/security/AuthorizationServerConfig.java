@@ -34,20 +34,15 @@ public class AuthorizationServerConfig {
 
         //1. 웹 클라이언트 (React, Vue 등)
         RegisteredClient webClient = RegisteredClient.withId("gearfirst-client-id")
-                //클라이언트 식별 정보
                 .clientId("gearfirst-client") //프론트엔드 앱 id
-                .clientSecret(passwordEncoder.encode("secret")) // 개발 단계에서는 NoOp (운영에선 BCrypt!)
+                .clientSecret(passwordEncoder.encode("secret"))
                 //.clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                //OAuth2 인증 방식
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE) //OAuth2 인증 방식
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                //인가 코드 발급 후 돌아올 주소 (프론트 주소)
-                .redirectUri("https://gearfirst.vercel.app/auth/callback")   // 배포용
+                .redirectUri("https://gearfirst.vercel.app/auth/callback")   // //인가 코드 발급 후 돌아올 주소 (프론트 주소)
                 .redirectUri("http://localhost:5173/auth/callback")
-
-                //클라이언트가 요청 가능한 접근 범위
-                .scope("openid")
+                .scope("openid")        //클라이언트가 요청 가능한 접근 범위
                 .scope("email")
                 .scope("offline_access")
                 //토큰 관련 정책
@@ -55,12 +50,11 @@ public class AuthorizationServerConfig {
                         .accessTokenTimeToLive(Duration.ofMinutes(30))
                         .refreshTokenTimeToLive(Duration.ofDays(1))
                         .reuseRefreshTokens(false) //rotation
-                        //.reuseRefreshTokens(true) //TODO: refresh token 재사용 금지
                         .build())
                 //클라이언트 정책
                 .clientSettings(ClientSettings.builder()
                         .requireAuthorizationConsent(false) // “이 앱이 정보에 접근하도록 허용하시겠습니까?” 창 비활성화
-                        .requireProofKey(true) // PKCE 필수(true) TODO: 프론트 엔드가 붙으면 활성화 예정
+                        .requireProofKey(true)
                         .build())
                 .build();
 
@@ -68,7 +62,9 @@ public class AuthorizationServerConfig {
         // 2. 네이티브 앱 클라이언트 (Android / iOS)
         RegisteredClient nativeAppClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("gearfirst-client-mobile")
-                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // 시크릿 없음
+                .clientSecret(passwordEncoder.encode("secret"))
+                //.clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // 시크릿 없음
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 // RFC 8252에 따라 loopback 또는 custom scheme redirect 허용

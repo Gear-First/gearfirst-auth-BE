@@ -3,18 +3,18 @@ package com.gearfirst.backend.api.auth.controller;
 import com.gearfirst.backend.api.auth.dto.ChangePasswordRequest;
 import com.gearfirst.backend.api.auth.dto.CreateAccount;
 import com.gearfirst.backend.api.auth.dto.RegenerateTempPasswordRequest;
-import com.gearfirst.backend.api.auth.dto.SignupRequest;
 import com.gearfirst.backend.api.auth.service.AuthService;
 import com.gearfirst.backend.common.response.ApiResponse;
 import com.gearfirst.backend.common.response.SuccessStatus;
-import com.gearfirst.backend.common.result.ActResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Tag(name = "auth", description = "인증 API 입니다.")
