@@ -67,13 +67,14 @@ public class AuthorizationServerConfig {
 
         // 2. 네이티브 앱 클라이언트 (Android / iOS)
         RegisteredClient nativeAppClient = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("gearfirst-android-native")
+                .clientId("gearfirst-client-mobile")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE) // 시크릿 없음
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 // RFC 8252에 따라 loopback 또는 custom scheme redirect 허용
                 //.redirectUri("com.gearfirst.app://callback")
-                .redirectUri("http://127.0.0.1:8080/callback") // 로컬 테스트용
+                // 로컬 테스트용
+                .redirectUri("gearfirst://callback") // Android 에뮬레이터 & iOS 시뮬레이터 & 실제 기기 테스트 (Mac IP)
                 .scope("openid")
                 .scope("email")
                 .scope("offline_access")
