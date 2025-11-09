@@ -127,7 +127,12 @@ public class SecurityConfig {
                                 "/api/v1/auth/signup", // 회원가입 허용
                                 "/auth/api/v1/auth/signup", // 회원가입 허용
                                 "/api/v1/auth/delete",       //회원 삭제
-                                "/auth/api/v1/auth/delete"
+                                "/auth/api/v1/auth/delete",
+                                "/auth/api/v1/auth/change-password", //비밀번호 변경
+                                "/api/v1/auth/change-password",
+                                "/auth/api/v1/auth/regenerate-temp-password", //임시비밀번호 발급
+                                "/api/v1/auth/regenerate-temp-password"
+
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
