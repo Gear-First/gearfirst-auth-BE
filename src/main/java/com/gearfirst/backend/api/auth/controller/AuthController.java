@@ -44,6 +44,13 @@ public class AuthController {
         return ApiResponse.success_only(SuccessStatus.CREATE_TEMP_PASSWORD_SUCCESS);
     }
 
+    @Operation(summary = "유저 삭제 API", description = "user서버가 호출하는 api로 auth에 존재하는 회원을 삭제합니다.")
+    @PostMapping("/delete")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@RequestBody Long userId) {
+        authService.deleteUser(userId);
+        return ApiResponse.success_only(SuccessStatus.DELETE_USER_SUCCESS);
+    }
+
 
 
 }
