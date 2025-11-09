@@ -11,6 +11,7 @@ public enum SuccessStatus {
     /** 200 SUCCESS */
     SEND_SAMPLE_SUCCESS(HttpStatus.OK,"샘플 조회 성공"),
     CHANGE_PASSWORD_SUCCESS(HttpStatus.OK, "비밀번호 변경 성공"),
+    DELETE_USER_SUCCESS(HttpStatus.OK, "유저 삭제 성공"),
 
     /** 201 CREATED */
     CREATE_SAMPLE_SUCCESS(HttpStatus.CREATED, "샘플 등록 성공"),

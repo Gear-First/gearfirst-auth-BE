@@ -10,4 +10,5 @@ public interface AuthService {
     void createAccount(CreateAccount request);
     void changePassword(ChangePasswordRequest request);
     void regenerateTempPassword(String email,String personalEmail);
+    void deleteUser(Long userId);
 }

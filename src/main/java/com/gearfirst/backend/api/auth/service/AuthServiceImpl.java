@@ -108,4 +108,13 @@ public class AuthServiceImpl implements AuthService{
             }
         });
     }
+
+    @Transactional
+    @Override
+    public void deleteUser(Long userId) {
+        Auth auth = authRepository.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorStatus.NOT_FOUND_USER_EXCEPTION.getMessage()));
+
+        authRepository.delete(auth);
+    }
 }
