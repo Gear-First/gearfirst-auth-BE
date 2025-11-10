@@ -11,7 +11,7 @@
         }
 
         html, body {
-            height: 100%; /* ✅ 높이 100% 지정 */
+            height: 100%;
             margin: 0;
             padding: 0;
             font-family: 'Noto Sans KR', 'Segoe UI', sans-serif;
@@ -23,7 +23,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100dvh; /* ✅ 모바일 대응 (동적 viewport 높이) */
+            height: 100dvh;
         }
 
         .login-wrapper {
@@ -84,13 +84,14 @@
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
+        /* ✅ input 클릭(포커스) 색상 변경 */
         input:focus {
-            border-color: #0056d2;
-            box-shadow: 0 0 0 2px rgba(0, 86, 210, 0.1);
+            border-color: #111827;
         }
 
+        /* ✅ 버튼 색상 변경 */
         button {
-            background-color: #2f2f2f;
+            background-color: #111827;
             color: #ffffff;
             border: none;
             border-radius: 8px;
@@ -101,8 +102,9 @@
             transition: background-color 0.25s ease;
         }
 
+        /* ✅ hover 시 살짝 더 어둡게 */
         button:hover {
-            background-color: #1f1f1f;
+            background-color: #0b0f1a;
         }
 
         .error {
@@ -129,7 +131,7 @@
             text-decoration: underline;
         }
 
-        /* ✅ 반응형: 모바일 화면 (최대 480px) */
+        /* ✅ 반응형: 모바일 화면 */
         @media (max-width: 480px) {
             .login-wrapper {
                 width: 100%;
