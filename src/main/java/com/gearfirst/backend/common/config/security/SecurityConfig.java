@@ -2,8 +2,10 @@ package com.gearfirst.backend.common.config.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -141,9 +143,6 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login")      // 로그인 POST 엔드포인트
                         .usernameParameter("email")
                         .passwordParameter("password")
-//                        .successHandler((request, response, authentication) -> {
-//                            request.getSession().invalidate(); // 기존 세션 제거
-//                        })
 
                         .failureUrl("/login?error=true")
                         .permitAll()
@@ -153,6 +152,33 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID","SESSION", "remember-me")
                         .clearAuthentication(true)
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            // 로그아웃 요청 로그
+                            log.info(" [LOGOUT] 로그아웃 요청 감지");
+
+                            // 현재 세션 정보 확인
+                            HttpSession session = request.getSession(false);
+                            if (session == null) {
+                                log.info(" 세션이 이미 무효화됨 (session == null)");
+                            } else {
+                                log.info(" 세션 아직 살아있음, ID={}", session.getId());
+                            }
+
+                            // 클라이언트 쿠키 정보 확인
+                            if (request.getCookies() != null) {
+                                Arrays.stream(request.getCookies()).forEach(c ->
+                                        log.info(" [쿠키] {} = {}", c.getName(), c.getValue())
+                                );
+                            } else {
+                                log.info(" 요청에 쿠키가 없음");
+                            }
+
+                            // 응답 쿠키 확인 (Set-Cookie 헤더 직접 추가 후 확인용)
+                            response.addCookie(new Cookie("logout-log", "done"));
+                            log.info(" 로그아웃 처리 완료, Set-Cookie 헤더로 JSESSIONID 만료 예정");
+
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        })
                 );
 
 
