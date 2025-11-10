@@ -171,7 +171,7 @@ public class SecurityConfig {
         var config = new org.springframework.web.cors.CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",              // 로컬 개발용
-                "https://gearfirst.vercel.app"       // 프론트 배포용
+                "https://gearfirst-fe.vercel.app"       // 프론트 배포용
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
         config.setAllowedHeaders(Collections.singletonList("*"));

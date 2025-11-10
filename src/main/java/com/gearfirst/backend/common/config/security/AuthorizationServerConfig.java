@@ -40,8 +40,10 @@ public class AuthorizationServerConfig {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE) //OAuth2 인증 방식
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-                .redirectUri("https://gearfirst.vercel.app/auth/callback")   // //인가 코드 발급 후 돌아올 주소 (프론트 주소)
+                .redirectUri("https://gearfirst-fe.vercel.app/auth/callback")   // //인가 코드 발급 후 돌아올 주소 (프론트 주소)
                 .redirectUri("http://localhost:5173/auth/callback")
+                .postLogoutRedirectUri("http://localhost:5173/login") // 로그아웃 후 돌아올 주소 추가
+                .postLogoutRedirectUri("https://gearfirst-fe.vercel.app/login")
                 .scope("openid")        //클라이언트가 요청 가능한 접근 범위
                 .scope("email")
                 .scope("offline_access")
