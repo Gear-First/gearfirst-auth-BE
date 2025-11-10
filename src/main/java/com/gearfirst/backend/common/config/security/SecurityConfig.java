@@ -72,7 +72,7 @@ public class SecurityConfig {
                         authorizationServer.oidc(Customizer.withDefaults()) // OIDC 켜기
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/.well-known/openid-configuration", "/.well-known/jwks.json").permitAll()
+                        .requestMatchers("/.well-known/openid-configuration", "/.well-known/jwks.json", "/.well-known/acme-challenge/**").permitAll()
                         .requestMatchers("/oauth2/jwks").permitAll()
                         .anyRequest().authenticated()
                 )
