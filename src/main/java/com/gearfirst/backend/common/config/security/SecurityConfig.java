@@ -133,7 +133,8 @@ public class SecurityConfig {
                                 "/auth/api/v1/auth/change-password", //비밀번호 변경
                                 "/api/v1/auth/change-password",
                                 "/auth/api/v1/auth/regenerate-temp-password", //임시비밀번호 발급
-                                "/api/v1/auth/regenerate-temp-password"
+                                "/api/v1/auth/regenerate-temp-password",
+                                "/.well-known/acme-challenge/**"
 
                         ).permitAll()
                         .anyRequest().authenticated()
